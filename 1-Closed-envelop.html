@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Whitney & Marc</title>
+
+  <!-- Preload hero -->
+  <link rel="preload" as="image" href="images/envelope.avif" imagesrcset="images/envelope.avif 1x" />
+  <!-- Optional: load Playfair Display (for footer + title) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+
+<!-- Optional: hint the browser about the audio host DNS -->
+<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+
+  <style>
+    :root{
+      --gold:#c7a740;
+      --ink:#1a1715;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:#000; color:#fff; overflow:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* HERO */
+    .hero{ position:fixed; inset:0; width:100%; height:100dvh; display:grid; place-items:center; isolation:isolate; }
+    .hero picture, .hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+    .hero::after{
+      content:""; position:absolute; inset:0; z-index:1;
+      background:
+        radial-gradient(120% 120% at 50% 10%, rgba(199,167,64,.16), transparent 55%),
+        radial-gradient(140% 100% at 50% 110%, rgba(0,0,0,.45), rgba(0,0,0,.75));
+      pointer-events:none;
+    }
+
+    /* Center content */
+    .content{ position:relative; z-index:2; display:grid; place-items:center; gap:16px; text-align:center; padding:24px; }
+    .title{
+      font-family:"Playfair Display", ui-serif, Georgia, serif;
+      letter-spacing:.08em; font-weight:600;
+      font-size: clamp(28px, 6vw, 44px);
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+    }
+    .tap{
+      display:inline-flex; align-items:center; gap:.6em;
+      border:1px solid rgba(255,255,255,.4); border-radius:999px;
+      padding:10px 16px; background:rgba(0,0,0,.35); backdrop-filter:blur(6px);
+      color:#fff; text-decoration:none; font-weight:600; letter-spacing:.06em; text-transform:uppercase; font-size:14px;
+      transition: transform .15s ease, background-color .2s ease, border-color .2s ease;
+      will-change: transform;
+    }
+    .tap:active{ transform:scale(.98) }
+    .tap svg{ width:18px; height:18px; display:block }
+    .hint{ font-size:13px; opacity:.85; }
+
+    /* Music toggle */
+    #toggle-audio.wm-speaker{
+      position:fixed; right:16px; bottom:16px; z-index:9999;
+      width:54px; height:54px; border:none; border-radius:50%;
+      display:grid; place-items:center; padding:0;
+      background:rgba(255,255,255,.88); color:#111;
+      box-shadow:0 8px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.06);
+      backdrop-filter:blur(6px);
+    }
+    #toggle-audio.wm-speaker svg{ width:22px; height:22px; display:block }
+    #toggle-audio.wm-speaker.playing::before{
+      content:""; position:absolute; inset:-10px; border-radius:999px;
+      background:radial-gradient(circle, rgba(62,47,28,.18) 0%, rgba(62,47,28,0) 60%);
+      animation:wmRing 2.6s ease-out infinite;
+    }
+    @keyframes wmRing{ 0%{opacity:.22; transform:scale(.9)} 70%{opacity:.06} 100%{opacity:0; transform:scale(1.25)} }
+
+    /* Ripple */
+    .wm-ripple{ position:absolute; inset:0; pointer-events:none; z-index:9 }
+    .wm-r{ position:absolute; width:1px; height:1px; border-radius:50%;
+      border:6px solid rgba(199,167,64,.35); transform:translate(-50%,-50%); opacity:1;
+      transition: transform .65s ease, opacity .65s ease;
+    }
+    @media (prefers-reduced-motion: reduce){ .wm-ripple{ display:none } }
+
+    /* Exit fade */
+    .fadeout{ animation:fadeOut .35s ease forwards }
+    @keyframes fadeOut{ to{ opacity:0; transform:scale(1.01) } }
+
+    /* LIGHT PRELOADER */
+    .preloader{
+      position:fixed; inset:0; z-index:10000; display:grid; place-items:center;
+      background: radial-gradient(120% 140% at 50% 30%, rgba(0,0,0,.15), rgba(0,0,0,.65));
+      opacity:0; pointer-events:none; transition: opacity .25s ease;
+    }
+    .preloader.show{ opacity:1; pointer-events:auto; }
+    .spinner{
+      width:42px; height:42px; border-radius:50%;
+      border:2px solid rgba(255,255,255,.35); border-top-color:var(--gold);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg) } }
+    @media (prefers-reduced-motion: reduce){
+      .spinner{ animation:none }
+    }
+    .preloader .brand{
+      margin-top:14px; font-size:13px; letter-spacing:.2em; text-transform:uppercase; opacity:.9;
+    }
+
+    /* ===== Footer – Sage bar overlay (#607457) ===== */
+    .wm-footer--bar{
+      --accent: 96,116,87;       /* #607457 */
+      --text: 248,248,248;       /* near-white text */
+      --pad-y: 20px;             /* height control */
+      --pad-x: 22px;
+      --blur: 6px;
+
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
+      color: rgba(var(--text), .95);
+      backdrop-filter: blur(var(--blur)) saturate(115%);
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(115%);
+      background:
+        linear-gradient(180deg,
+          rgba(var(--accent), .88) 0%,
+          rgba(var(--accent), .82) 60%,
+          rgba(var(--accent), .80) 100%);
+      box-shadow:
+        0 -22px 50px rgba(0,0,0,.18) inset,
+        0 -1px 0 rgba(255,255,255,.25) inset;
+      border-top: 1px solid rgba(255,255,255,.18);
+      padding: var(--pad-y) 0;
+      font: 12.5px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Playfair Display", serif;
+    }
+
+    /* layout: perfect centering with symmetric columns */
+    .wmf-inner{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--pad-x);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr; /* spacer | center | right */
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* centered content */
+    .wmf-center{ justify-self: center; text-align: center; }
+    .wmf-brand{
+      font-family: "Playfair Display", serif;
+      font-size: 16px;
+      letter-spacing: 0.3px;
+      font-weight: 400;
+    }
+    .wmf-sep{ padding: 0 8px; opacity: .75; }
+    .wmf-locdate{
+      font-family: "Playfair Display", serif;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      font-weight: 200;
+    }
+
+    /* right area (small clock); left is just a spacer */
+    .wmf-right{ justify-self: end; opacity: .9; font-size: 12.5px; }
+
+    /* mobile tweaks */
+    @media (max-width: 640px){
+      .wmf-inner{ grid-template-columns: 1fr auto 1fr; gap: 6px; }
+      .wmf-brand{ font-size: 16px; }
+      .wmf-locdate{ display: block; margin-top: 2px; font-size: 12px; }
+      .wmf-right{ display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero" id="hero">
+    <picture>
+      <source srcset="images/envelope.avif" type="image/avif" />
+      <source srcset="images/envelope.webp" type="image/webp" />
+      <img id="hero-img" src="images/envelope.jpg" alt="Invitation Envelope" fetchpriority="high" loading="eager" decoding="async" />
+    </picture>
+
+    <div class="content">
+      <div class="title">Whitney &amp; Marc</div>
+      <button id="enter" class="tap" type="button" aria-label="Tap to open">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Tap to open</span>
+      </button>
+      <div class="hint">sound on for a little magic ✨</div>
+    </div>
+    <div class="wm-ripple" id="rip"></div>
+  </div>
+
+  <!-- LIGHT PRELOADER -->
+  <div class="preloader" id="preloader" aria-live="polite" aria-busy="true" role="status">
+    <div>
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="brand">Loading</div>
+    </div>
+  </div>
+
+  <!-- Wedding footer (Code B) -->
+  <footer class="wm-footer wm-footer--bar" aria-label="Wedding footer">
+    <div class="wmf-inner">
+      <div class="wmf-spacer" aria-hidden="true"></div>
+
+      <div class="wmf-center">
+        <span class="wmf-brand">Whitney &amp; Marc</span>
+        <span class="wmf-sep">•</span>
+        <span class="wmf-locdate">Cabrera de Mar — 19&nbsp;Jun&nbsp;2026</span>
+      </div>
+
+      <div class="wmf-right"><span id="wm-time">—</span></div>
+    </div>
+  </footer>
+
+    <!-- Global Audio + Entry Logic -->
+  <script>
+  (() => {
+    const DEST = './'; // change if needed
+
+    const AUDIO_SRC = 'https://raw.githubusercontent.com/Max-Angula/wedding-audio/main/Hot%20Chip%20%E2%80%93%20Devotion.mp3';
+    const TARGET_VOL = 0.85;
+    const K = { approved:'wmAudioApproved', playing:'wmAudioPlaying', anchor:'wmAudioAnchorMs', lastT:'wmAudioLastSec' };
+
+    const get = (k,d=null)=>{ try{return localStorage.getItem(k)??d;}catch{return d;} };
+    const set = (k,v)=>{ try{localStorage.setItem(k,v);}catch{} };
+    const approved = ()=> get(K.approved)==='1';
+    const setApproved = v=> set(K.approved, v?'1':'0');
+    const wantsPlaying = ()=> get(K.playing,'1')==='1';
+    const setWantsPlaying = v=> set(K.playing, v?'1':'0');
+    const getAnchor = ()=>{ const v=parseInt(get(K.anchor)||'',10); return isFinite(v)?v:null; };
+    const setAnchor = ms=> set(K.anchor, String(ms));
+    const getLastT = ()=>{ const v=parseFloat(get(K.lastT)||''); return isFinite(v)?v:0; };
+    const setLastT = s=> set(K.lastT, String(Math.max(0, s|0)));
+
+    const heroImg = document.getElementById('hero-img');
+    const hero    = document.getElementById('hero');
+    const enter   = document.getElementById('enter');
+    const rip     = document.getElementById('rip');
+    const pre     = document.getElementById('preloader');
+
+    let audio;
+
+    function ensureAudio(){
+      if (audio) return audio;
+      audio = document.createElement('audio');
+      audio.id = 'wm-audio';
+      audio.preload = 'none';
+      audio.loop = true;
+      audio.playsInline = true;
+      audio.crossOrigin = 'anonymous';
+      document.body.appendChild(audio);
+
+      audio.addEventListener('timeupdate', ()=> setLastT(audio.currentTime));
+      audio.addEventListener('seeking',    ()=> setLastT(audio.currentTime));
+      audio.addEventListener('loadedmetadata', () => {
+        const dur = audio.duration;
+        if (isFinite(dur) && dur>1){
+          const anchor = getAnchor();
+          const t = anchor ? ((Date.now()-anchor)/1000)%dur : getLastT();
+          try{ audio.currentTime = Math.max(0, t); }catch{}
+        }
+      }, {once:true});
+
+      return audio;
+    }
+
+    function fadeTo(a, to, ms=600){
+      const from = a.volume ?? 0;
+      const t0 = performance.now();
+      const step = t=>{
+        const k = Math.min(1,(t-t0)/ms);
+        try{ a.volume = from + (to-from)*k; }catch{}
+        if (k<1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    async function startPlayback(){
+      const a = ensureAudio();
+      if (!a.src) a.src = AUDIO_SRC;
+      if (!approved()){
+        setApproved(true);
+        setAnchor(Date.now() - Math.floor(a.currentTime||0)*1000);
+      }
+      try{
+        a.volume = 0.0;
+        await a.play();
+        setWantsPlaying(true);
+        fadeTo(a, TARGET_VOL, 900);
+      }catch{}
+    }
+
+    // Toggle button (auto-insert)
+    const SVG_ON  =
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>' +
+      '<path d="M17 9a5 5 0 0 1 0 6M20 7a8 8 0 0 1 0 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
+      '</svg>';
+
+    const SVG_OFF =
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+      '<path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>' +
+      '<path d="M16 9l5 5m0-5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+      '</svg>';
+
+    function ensureButton(){
+      let btn = document.getElementById('toggle-audio');
+      if (!btn){
+        btn = document.createElement('button');
+        btn.id = 'toggle-audio';
+        btn.className = 'wm-speaker';
+        document.body.appendChild(btn);
+      }
+      return btn;
+    }
+    function setIcon(btn, playing){
+      btn.innerHTML = playing ? SVG_ON : SVG_OFF;
+      btn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
+      btn.classList.toggle('playing', playing);
+    }
+
+    // Preloader helpers
+    let preShown = false, preTimer = null, preSafety = null;
+
+    function showPreloader(){
+      if (!pre || preShown) return;
+      preShown = true;
+      pre.classList.add('show');
+    }
+    function hidePreloader(){
+      if (!pre) return;
+      clearTimeout(preTimer);
+      clearTimeout(preSafety);
+      pre.classList.remove('show');
+      // allow fade-out CSS to play
+      setTimeout(()=>{ pre.style.display = 'none'; }, 260);
+    }
+
+    function waitForHeroWithTimeout(timeoutMs = 2500){
+      if (!heroImg) return Promise.resolve();
+      const decodePromise = (async () => {
+        try{
+          if ('decode' in heroImg) {
+            await heroImg.decode();
+          } else if (!heroImg.complete) {
+            await new Promise(r => heroImg.addEventListener('load', r, {once:true}));
+          }
+        }catch{}
+      })();
+      const timeoutPromise = new Promise(resolve => setTimeout(resolve, timeoutMs));
+      return Promise.race([decodePromise, timeoutPromise]);
+    }
+
+    function setupRipple(){
+      if (!hero || !rip) return;
+      const rM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (rM) return;
+
+      hero.addEventListener('click', e => {
+        // ignore clicks on footer, etc.; only ripples inside hero
+        const r = document.createElement('i');
+        r.className='wm-r';
+        const rect = hero.getBoundingClientRect();
+        const s = r.style;
+        s.left = (e.clientX - rect.left)+'px';
+        s.top  = (e.clientY - rect.top)+'px';
+        rip.appendChild(r);
+        requestAnimationFrame(()=>{
+          s.transform='translate(-50%,-50%) scale(18)';
+          s.opacity='0';
+        });
+        setTimeout(()=>r.remove(), 700);
+      }, {passive:true});
+    }
+
+    function setupEnterAndAudio(){
+      if (!enter || !hero) return;
+
+      const btn = ensureButton();
+      setIcon(btn, false);
+
+      btn.addEventListener('click', async () => {
+        const a = ensureAudio();
+        if (a.paused){
+          await startPlayback();
+          setIcon(btn, true);
+        } else {
+          try{ a.pause(); }catch{}
+          setWantsPlaying(false);
+          setIcon(btn, false);
+        }
+        try{ navigator.vibrate && navigator.vibrate(8); }catch{}
+      });
+
+      let busy = false;
+      const go = async () => {
+        if (busy) return;
+        busy = true;
+        try{
+          await startPlayback();
+          setIcon(btn, true);
+        }catch{}
+        hero.classList.add('fadeout');
+        setTimeout(()=>{ window.location.href = DEST; }, 260);
+      };
+
+      // main CTA
+      enter.addEventListener('click', () => { go(); });
+
+      // tap anywhere on hero (except speaker) to proceed
+      hero.addEventListener('click', (e) => {
+        if (e.target.closest('#toggle-audio') || e.target.closest('#enter')) return;
+        go();
+      });
+    }
+
+    function setupMediaSession(){
+      if (!('mediaSession' in navigator)) return;
+      try{
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title:'Ceremony Prelude', artist:'Whitney & Marc', album:'Wedding Invitation'
+        });
+        navigator.mediaSession.setActionHandler('play',  () => startPlayback());
+        navigator.mediaSession.setActionHandler('pause', () => {
+          const a = ensureAudio();
+          try{ a.pause(); }catch{}
+          setWantsPlaying(false);
+        });
+      }catch{}
+    }
+
+    function startClock(){
+      const el = document.getElementById('wm-time');
+      if (!el) return;
+      (function tick(){
+        const d = new Date();
+        el.textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        setTimeout(tick, 1000);
+      })();
+    }
+
+    const onReady = () => {
+      // 1) Wire interactions immediately (no waiting for image decode)
+      setupRipple();
+      setupEnterAndAudio();
+      setupMediaSession();
+      startClock();
+
+      // 2) Lightweight preloader: only show if hero is a bit slow
+      preTimer  = setTimeout(showPreloader, 180);
+      preSafety = setTimeout(hidePreloader, 5000);
+
+      // 3) Let hero decode in the background, but don't block everything on it
+      waitForHeroWithTimeout().then(() => hidePreloader());
+    };
+
+    (document.readyState === 'loading')
+      ? document.addEventListener('DOMContentLoaded', onReady, {once:true})
+      : onReady();
+  })();
+  </script>
