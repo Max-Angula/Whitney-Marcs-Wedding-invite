@@ -20,7 +20,6 @@
     :root{
       --gold:#c7a740;
       --ink:#1a1715;
-      --vh: 1vh; /* ✅ Mobile viewport height fix */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -32,10 +31,7 @@
 
     /* HERO */
     .hero{
-      position:fixed; inset:0; width:100%;
-      height:100dvh; /* existing */
-      height:calc(var(--vh) * 100); /* ✅ fixes bottom white gap on mobile */
-      min-height:calc(var(--vh) * 100); /* ✅ */
+      position:fixed; inset:0; width:100%; height:100dvh;
       display:grid; place-items:center; isolation:isolate;
     }
     .hero picture,
@@ -247,16 +243,6 @@
   </style>
 </head>
 <body>
-  <!-- ✅ Mobile 100vh fix (prevents bottom whitespace on iOS/Android browsers) -->
-  <script>
-    (() => {
-      const setVH = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-      setVH();
-      window.addEventListener('resize', setVH, { passive: true });
-      window.addEventListener('orientationchange', setVH, { passive: true });
-    })();
-  </script>
-
   <!-- Wedding Preloader -->
   <div id="wedding-preloader" aria-hidden="true">
     <div class="wp-inner">
