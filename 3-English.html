@@ -163,125 +163,97 @@
        style="margin-top:12px; display:inline-flex; align-items:center; gap:.5rem;">
       <span>Add to Calendar</span>
     </a>
+ <!-- /ADD-TO-CALENDAR -->
+<script>
+(function(){
+  const btn = document.getElementById('wm-addtocal');
+  if (!btn) return;
+
+  // Event info
+  const title   = 'Whitney & Marc — Wedding';
+  // 18:00 Windhoek (UTC+2) = 16:00 UTC on Jun 19, 2026
+  const start   = new Date(Date.UTC(2026, 5, 19, 16, 0, 0));
+  const end     = new Date(Date.UTC(2026, 5, 19, 20, 0, 0));
+  const details = 'Masia La Mer · Cabrera de Mar\nhttps://lamerbcn.com/';
+  const loc     = 'Masia La Mer, Camí de Santa Elena, 30, Cabrera de Mar';
+
+  const dt = u => u.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+  const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+    + '&text=' + encodeURIComponent(title)
+    + '&dates=' + dt(start) + '/' + dt(end)
+    + '&details=' + encodeURIComponent(details)
+    + '&location=' + encodeURIComponent(loc);
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open(url, '_blank', 'noopener,noreferrer');
+  });
+})();
+</script>
 
       </div>
     </section>
     <section class="skrollable u-clearfix u-image u-parallax u-valign-top-lg u-valign-top-md u-valign-top-sm u-valign-top-xs u-section-6" id="carousel_c9ad" data-image-width="1712" data-image-height="2560">
       <div class="u-clearfix u-sheet u-sheet-1"></div>
     </section>
-   <!-- ===== Mobile Parallax Fix (English page) ===== -->
-<style>
-/* Mobile-only parallax & skroll fix */
-@media (max-width: 1024px), (hover: none) {
-  .u-parallax,
-  .skrollable,
-  [data-image-width][data-image-height] {
-    background-attachment: scroll !important;
-    transform: none !important;
-    will-change: auto !important;
-  }
-
-  /* Prevent GPU overuse on animated sections */
-  .u-image,
-  .u-section-7,
-  .u-section-8 {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-  }
-}
-</style>
-<!-- ===== /Mobile Parallax Fix ===== -->
-
-<section class="u-clearfix u-image u-valign-bottom-lg u-valign-bottom-md u-section-7"
-         id="carousel_3b1e"
-         data-image-width="729"
-         data-image-height="1536">
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-1">
-    23:30–01:30
-  </a>
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-2">
-    02:00 Good bye
-  </a>
-
-  <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-1"
-      data-animation-name="customAnimationIn"
-      data-animation-duration="1500"
-      data-animation-delay="200">
-    PROGRAMMING
-  </h3>
-
-  <h4 class="u-align-center u-custom-font u-text u-text-custom-color-8 u-text-2"
-      data-animation-name="customAnimationIn"
-      data-animation-duration="1500"
-      data-animation-delay="200">
-    and schedules
-  </h4>
-
-  <h5 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-3"
-      data-animation-name="customAnimationIn"
-      data-animation-duration="1500"
-      data-animation-delay="200">
-    Remember to plan ahead so you don't miss a moment of this very special ceremony for us.
-  </h5>
-
-  <div class="custom-expanded data-layout-selected u-align-center u-clearfix u-gutter-10 u-layout-wrap u-layout-wrap-1">
-    <div class="u-gutter-0 u-layout">
-      <div class="u-layout-row">
-        <div class="u-align-left u-container-style u-layout-cell u-size-60 u-layout-cell-1"
-             data-image-width="82"
-             data-image-height="150">
-          <div class="u-container-layout u-valign-middle-lg u-valign-middle-md u-container-layout-1">
-
-            <img class="u-image u-image-contain u-image-default u-image-1"
-                 src="images/Hailuo-Video-Animate-this-wate-unscreen2.gif"
-                 alt=""
-                 loading="lazy"
-                 decoding="async"
-                 width="420"
-                 height="360">
-
-            <img class="u-image u-image-contain u-image-default u-image-2"
-                 src="images/5826e3ec-c507-43ce-a8ea-3928d2-unscreen.gif"
-                 alt=""
-                 loading="lazy"
-                 decoding="async"
-                 width="360"
-                 height="505">
-
+    <section class="u-clearfix u-image u-valign-bottom-lg u-valign-bottom-md u-section-7" id="carousel_3b1e" data-image-width="729" data-image-height="1536">
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-1">23:30-01:30</a>
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-2">02:00 Good bye</a>
+      <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200"> PROGRAMMING</h3>
+      <h4 class="u-align-center u-custom-font u-text u-text-custom-color-8 u-text-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200"> and schedules</h4>
+      <h5 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200"> Remember to plan ahead so you don't miss a moment of this very special ceremony for us.</h5>
+      <div class="custom-expanded data-layout-selected u-align-center u-clearfix u-gutter-10 u-layout-wrap u-layout-wrap-1">
+        <div class="u-gutter-0 u-layout">
+          <div class="u-layout-row">
+            <div class="u-align-left u-container-align-left u-container-align-left-lg u-container-align-left-md u-container-align-left-xl u-container-style u-layout-cell u-shape-rectangle u-size-60 u-layout-cell-1" data-image-width="82" data-image-height="150">
+              <div class="u-container-layout u-valign-middle-lg u-valign-middle-md u-container-layout-1">
+                <img class="u-image u-image-contain u-image-default u-image-1" src="images/Hailuo-Video-Animate-this-wate-unscreen2.gif" alt="" data-image-width="420" data-image-height="360" loading="lazy" decoding="async" width="420" height="360">
+                <img class="u-image u-image-contain u-image-default u-image-2" src="images/5826e3ec-c507-43ce-a8ea-3928d2-unscreen.gif" alt="" data-image-width="360" data-image-height="505" loading="lazy" decoding="async" width="360" height="505">
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <img class="custom-expanded u-image u-image-contain u-image-default u-image-3"
-       src="images/360_F_519981823_pf77Oa0iVNYrh4AbDXkcvZA8zuEEaEJP-removebg-preview7.pngv.png"
-       alt=""
-       loading="lazy"
-       decoding="async"
-       width="699"
-       height="1280">
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-3">
-    20:30–23:30
-  </a>
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-4">
-    18:00–19:30
-  </a>
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-5">
-    19:30–20:30
-  </a>
-
-  <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-6">
-    19:30–20:30
-  </a>
-
-</section>
-
+<img class="custom-expanded u-image u-image-contain u-image-default u-image-3" src="images/360_F_519981823_pf77Oa0iVNYrh4AbDXkcvZA8zuEEaEJP-removebg-preview7.pngv.png" alt="" data-image-width="699" data-image-height="1280" loading="lazy" decoding="async" width="699" height="1280">
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-3">20:30-23:30</a>
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-4">18:00-19:30</a>
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-5">19:30-20:30</a>
+      <a href="" class="u-active-custom-color-10 u-border-none u-btn u-button-style u-custom-color-10 u-hover-custom-color-10 u-radius u-btn-6">19:30-20:30</a>
+    </section>
+    <section class="u-align-center u-clearfix u-container-align-center u-image u-section-8" id="sec-b8fc" data-image-width="1024" data-image-height="1536">
+      <div class="u-clearfix u-sheet u-valign-top u-sheet-1">
+        <div class="data-layout-selected u-align-center-sm u-align-center-xs u-clearfix u-expanded-width-xs u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
+              <div class="u-container-align-center-sm u-container-align-center-xs u-container-style u-layout-cell u-size-30 u-layout-cell-1" data-animation-name="fadeIn" data-animation-duration="1000" data-animation-delay="0">
+                <div class="u-container-layout u-valign-bottom-sm u-valign-middle-lg u-valign-middle-md u-container-layout-1">
+                  <div class="skrollable u-border-2 u-border-color-var u-container-align-center-sm u-container-style u-gradient u-group u-hover-feature u-radius u-group-1" data-animation-name="customAnimationIn" data-animation-duration="1000" data-animation-delay="0" data-animation-out="0" data-image-width="2000" data-image-height="1333">
+                    <div class="u-container-layout u-container-layout-2">
+                      <h4 class="u-align-center u-custom-font u-text u-text-custom-color-18 u-text-1">Dress Code</h4>
+                      <img class="custom-expanded u-image u-image-contain u-image-default u-image-1" src="images/output-onlinegiftools1.gif" alt="" data-image-width="400" data-image-height="362" loading="lazy" decoding="async" width="400" height="362">
+                      <h6 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-18 u-text-2"> Garden-chic, elegant and natural, Smart casual, light and vivid tones for a special day. Comfort and style in perfect union</h6>
+                      <a href="https://es.pinterest.com/search/pins/?q=garden%20informal%20atteir&rs=typed" class="u-active-custom-color-18 u-align-center-sm u-align-center-xs u-border-0 u-border-hover-grey-60 u-btn u-button-style u-custom-color-18 u-hover-custom-color-1 u-hover-feature u-btn-1" title="https://docs.google.com/document/d/1t-7AvXrIBiQwKzKJVYIis5qVb-F5yqeqCmKZlP669AI/edit?usp=drivesdk" target="_blank"> See dress code</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+             <div class="u-container-align-center-sm u-container-style u-layout-cell u-size-30 u-layout-cell-2">
+                <div class="u-container-layout u-valign-middle-lg u-valign-middle-md u-container-layout-3">
+                  <div class="u-border-2 u-border-custom-color-18 u-container-align-center-sm u-container-style u-gradient u-group u-radius u-group-2" data-animation-name="customAnimationIn" data-animation-duration="1000" data-animation-delay="0" data-animation-out="0">
+                    <div class="u-container-layout u-container-layout-4">
+                      <h4 class="u-align-center u-custom-font u-text u-text-custom-color-18 u-text-3"> Gifts </h4>
+                      <img class="u-expanded-width-xs u-image u-image-contain u-image-default u-image-2" src="images/Hailuo-Video-Enhance-this-wate-unscreen1.gif" alt="" data-image-width="360" data-image-height="540" loading="lazy" decoding="async" width="360" height="540">
+                      <h6 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-18 u-text-4"> The most important thing is your presence, but if you want to give us a gift, here are our details</h6>
+                     <a id="wm-gift-link" href="#gift-details" class="u-active-custom-color-18 u-align-center-sm u-align-center-xs u-border-0 u-border-hover-grey-60 u-btn u-button-style u-custom-color-18 u-hover-custom-color-1 u-hover-feature u-btn-2"> Gift details</a>
+                   </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- === GIFTS modal (Sabadell details) === -->
 <div id="wm-gift-modal" aria-hidden="true" role="dialog" aria-modal="true">
   <div class="wmg-backdrop" data-wm-close></div>
