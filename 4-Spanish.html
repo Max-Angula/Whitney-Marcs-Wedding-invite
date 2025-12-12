@@ -25,6 +25,15 @@
     <meta property="og:type" content="website">
     <meta name="referrer" content="origin">
     <meta data-intl-tel-input-cdn-path="intlTelInput/">
+    <!-- ✅ FIX: stop the animated bird flipping on mobile -->
+<style>
+  @media (max-width: 767px){
+    .u-image-5{
+      transform: none !important;
+      -webkit-transform: none !important;
+    }
+  }
+</style>
     <style>
 /* If a parent is flipping it, unflip the image */
 .u-image-5{
