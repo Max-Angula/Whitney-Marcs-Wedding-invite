@@ -54,6 +54,35 @@
       }
     </style>
 
+    <!-- ✅ ADDED: full-height hero (fix white gap on mobile) -->
+    <style id="wm-fullscreen-hero-css">
+      :root{ --vh: 1vh; }
+
+      /* Make the hero section truly fullscreen on mobile */
+      #block-1.wm-fullscreen{
+        min-height: calc(var(--vh) * 100);
+        height: calc(var(--vh) * 100);
+        overflow: hidden;
+      }
+
+      /* Neutralize common Nicepage sheet/layout padding/min-heights that cause gaps */
+      #block-1.wm-fullscreen .u-sheet,
+      #block-1.wm-fullscreen .u-container-layout{
+        min-height: 100% !important;
+        height: 100% !important;
+        padding-bottom: 0 !important;
+      }
+
+      /* Make the envelope image fill the viewport and crop nicely */
+      #block-1.wm-fullscreen .u-image-1{
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;   /* ✅ key: removes bottom whitespace */
+        object-position: center !important;
+        display: block;
+      }
+    </style>
+
     <!-- Tiny preloader styles -->
     <style id="wm-lite-preloader-css">
       #wm-lite-preloader{
@@ -143,7 +172,7 @@
     </header>
 
     <section
-      class="u-clearfix u-image u-valign-bottom-lg u-valign-bottom-md u-section-1"
+      class="u-clearfix u-image u-valign-bottom-lg u-valign-bottom-md u-section-1 wm-fullscreen"
       id="block-1"
       data-image-width="1024"
       data-image-height="1024"
@@ -231,6 +260,17 @@
         </div>
       </div>
     </section>
+
+    <!-- ✅ ADDED: mobile-safe vh variable (fixes 100vh white gap on iOS/Chrome mobile UI) -->
+    <script id="wm-vh-fix">
+      (() => {
+        const setVH = () => {
+          document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        };
+        setVH();
+        window.addEventListener('resize', setVH, { passive:true });
+      })();
+    </script>
 
     <!-- Optional: Nicepage SPA bundle -->
     <script defer src="js/wm-pack.js"></script>
