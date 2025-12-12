@@ -1516,111 +1516,140 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     }
   </style>
 
-  <script>
-  /* === Wedding Countdown: Days / Hours / Minutes only — multi-widget, throttled === */
-  (() => {
-    // 18:00 Windhoek (UTC+2) => 16:00 UTC
-    const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
+ <script>
+/* === Wedding Countdown: Days / Hours / Minutes only — waits for Nicepage DOM === */
+(() => {
+  // 18:00 Windhoek (UTC+2) => 16:00 UTC
+  const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
 
-    function ensureCSS() {
-      if (document.getElementById('wm-countdown-triple-css')) return;
-      const s = document.createElement('style');
-      s.id = 'wm-countdown-triple-css';
-      s.textContent = `
-        .u-countdown.wm-triple .u-countdown-seconds,
-        .u-countdown.wm-triple .u-countdown-separator-4,
-        .u-countdown.wm-triple .u-countdown-years,
-        .u-countdown.wm-triple .u-countdown-numbers,
-        .u-countdown.wm-triple .u-countdown-separator-1,
-        .u-countdown.wm-triple .u-countdown-separator-5 { display: none !important; }
-        .u-countdown.wm-triple .u-countdown-days,
-        .u-countdown.wm-triple .u-countdown-hours,
-        .u-countdown.wm-triple .u-countdown-minutes,
-        .u-countdown.wm-triple .u-countdown-separator-2,
-        .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
-      `;
-      document.head.appendChild(s);
+  // Inject CSS once (scoped by .wm-triple)
+  function ensureCSS() {
+    if (document.getElementById('wm-countdown-triple-css')) return;
+    const s = document.createElement('style');
+    s.id = 'wm-countdown-triple-css';
+    s.textContent = `
+      .u-countdown.wm-triple .u-countdown-seconds,
+      .u-countdown.wm-triple .u-countdown-separator-4,
+      .u-countdown.wm-triple .u-countdown-years,
+      .u-countdown.wm-triple .u-countdown-numbers,
+      .u-countdown.wm-triple .u-countdown-separator-1,
+      .u-countdown.wm-triple .u-countdown-separator-5 { display: none !important; }
+
+      .u-countdown.wm-triple .u-countdown-days,
+      .u-countdown.wm-triple .u-countdown-hours,
+      .u-countdown.wm-triple .u-countdown-minutes,
+      .u-countdown.wm-triple .u-countdown-separator-2,
+      .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function digitsInto(counterEl, value, minLen) {
+    if (!counterEl) return;
+    const str = String(value).padStart(minLen, '0');
+    counterEl._wmUpdating = true;
+    counterEl.innerHTML = '';
+    for (const ch of str) {
+      const d = document.createElement('div');
+      d.className = 'u-countdown-number u-text-custom-color-8';
+      d.textContent = ch;
+      counterEl.appendChild(d);
     }
+    Promise.resolve().then(() => { counterEl._wmUpdating = false; });
+  }
 
-    function neutralizeVendor(wrap) {
-      if (!wrap || wrap._wmNeutralized) return wrap;
-      wrap._wmNeutralized = true;
-      Array.from(wrap.attributes).forEach(a => { if (/^data-/.test(a.name)) wrap.removeAttribute(a.name); });
-      const clone = wrap.cloneNode(true);
-      wrap.replaceWith(clone);
-      return clone;
-    }
+  function compute(nowMs) {
+    const diff = Math.max(0, TARGET_UTC_MS - nowMs);
+    const total = Math.floor(diff / 1000);
+    const days    = Math.floor(total / 86400);
+    const hours   = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    return { days, hours, minutes };
+  }
 
-    function digitsInto(counterEl, value, minLen) {
-      if (!counterEl) return;
-      const str = String(value).padStart(minLen, '0');
-      counterEl._wmUpdating = true;
-      counterEl.innerHTML = '';
-      for (const ch of str) {
-        const d = document.createElement('div');
-        d.className = 'u-countdown-number u-text-custom-color-8';
-        d.textContent = ch;
-        counterEl.appendChild(d);
-      }
-      Promise.resolve().then(() => { counterEl._wmUpdating = false; });
-    }
+  // ✅ Wait until Nicepage has fully populated the countdown markup
+  function isReady(wrap){
+    return !!(
+      wrap &&
+      wrap.querySelector('.u-countdown-wrapper') &&
+      wrap.querySelector('.u-countdown-days .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-hours .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-minutes .u-countdown-counter')
+    );
+  }
 
-    function compute(nowMs) {
-      const diff = Math.max(0, TARGET_UTC_MS - nowMs);
-      const total = Math.floor(diff / 1000);
-      const days    = Math.floor(total / 86400);
-      const hours   = Math.floor((total % 86400) / 3600);
-      const minutes = Math.floor((total % 3600) / 60);
-      return { days, hours, minutes };
-    }
+  function initOne(wrap) {
+    if (!wrap || wrap._wmTripleInit) return;
+    wrap._wmTripleInit = true;
 
-    function initOne(wrap) {
-      if (!wrap || wrap._wmTripleInit) return;
-      wrap._wmTripleInit = true;
+    wrap.classList.add('wm-triple');
+    ensureCSS();
 
-      wrap = neutralizeVendor(wrap);
-      wrap.classList.add('wm-triple');
-      ensureCSS();
+    const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
+    const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
+    const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
 
-      const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
-      const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
-      const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
+    // Hard-hide seconds too (in case Nicepage toggles display inline)
+    const secBlock = wrap.querySelector('.u-countdown-seconds'); if (secBlock) secBlock.style.display = 'none';
+    const secSep   = wrap.querySelector('.u-countdown-separator-4'); if (secSep) secSep.style.display = 'none';
 
-      const secBlock = wrap.querySelector('.u-countdown-seconds'); if (secBlock) secBlock.style.display = 'none';
-      const secSep   = wrap.querySelector('.u-countdown-separator-4'); if (secSep) secSep.style.display = 'none';
-
-      let moBusy = false;
-      const mo = new MutationObserver(() => {
-        if (moBusy) return;
-        moBusy = true;
-        requestAnimationFrame(() => {
-          if (!(daysEl?._wmUpdating || hoursEl?._wmUpdating || minutesEl?._wmUpdating)) tick();
-          moBusy = false;
-        });
+    let moBusy = false;
+    const mo = new MutationObserver(() => {
+      if (moBusy) return;
+      moBusy = true;
+      requestAnimationFrame(() => {
+        if (!(daysEl?._wmUpdating || hoursEl?._wmUpdating || minutesEl?._wmUpdating)) tick();
+        moBusy = false;
       });
-      mo.observe(wrap, { subtree:true, childList:true, characterData:true });
+    });
+    mo.observe(wrap, { subtree:true, childList:true, characterData:true });
 
-      function tick() {
-        const { days, hours, minutes } = compute(Date.now());
-        digitsInto(daysEl,    days,    Math.max(2, String(days).length));
-        digitsInto(hoursEl,   hours,   2);
-        digitsInto(minutesEl, minutes, 2);
-      }
-
-      tick();
-      const id = setInterval(tick, 1000);
-      wrap._wmCountdownCleanup = () => { clearInterval(id); mo.disconnect(); };
+    function tick() {
+      const { days, hours, minutes } = compute(Date.now());
+      digitsInto(daysEl,    days,    Math.max(2, String(days).length));
+      digitsInto(hoursEl,   hours,   2);
+      digitsInto(minutesEl, minutes, 2);
     }
 
-    function start() { document.querySelectorAll('.u-countdown').forEach(initOne); }
+    tick();
+    const id = setInterval(tick, 1000);
+    wrap._wmCountdownCleanup = () => { clearInterval(id); mo.disconnect(); };
+  }
 
-    (document.readyState === 'loading')
-      ? document.addEventListener('DOMContentLoaded', start, { once:true })
-      : start();
+  // ✅ Retry loop: fixes “works only after refresh” on slower pages
+  function start() {
+    const wraps = Array.from(document.querySelectorAll('.u-countdown'));
+    if (!wraps.length) return;
 
-    window.addEventListener('wm:page-swapped', start);
-  })();
-  </script>
+    const t0 = performance.now();
+    const HARD_STOP_MS = 5000;
+
+    (function retry(){
+      let anyInited = false;
+
+      wraps.forEach(wrap => {
+        if (wrap._wmTripleInit) { anyInited = true; return; }
+        if (isReady(wrap)) { initOne(wrap); anyInited = true; }
+      });
+
+      if (!anyInited && (performance.now() - t0) < HARD_STOP_MS) {
+        requestAnimationFrame(retry);
+      }
+    })();
+  }
+
+  (document.readyState === 'loading')
+    ? document.addEventListener('DOMContentLoaded', start, { once:true })
+    : start();
+
+  // extra safety: some Nicepage builds finalize on load
+  window.addEventListener('load', start, { once:true });
+
+  // SPA / page swap
+  window.addEventListener('wm:page-swapped', start);
+})();
+</script>
+
 
   <script>
   /* Top scroll progress line – idle boot + passive listeners */
