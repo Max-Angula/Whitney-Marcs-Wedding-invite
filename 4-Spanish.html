@@ -170,7 +170,7 @@
         <div class="u-border-2 u-border-custom-color-10 u-image u-image-circle u-image-contain u-preserve-proportions u-image-1" alt="" data-image-width="450" data-image-height="450"></div>
         <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-2" src="images/animated-butterfly-image-0115.gif" alt="" data-image-width="35" data-image-height="35">
         <p class="u-align-center-xs u-custom-font u-font-playfair-display u-large-text u-text u-text-custom-color-8 u-text-default u-text-variant u-text-2"> Pel gran dia, perquè només falten: </p>
-        <div class="u-align-center-sm u-align-center-xs u-countdown u-countdown-1" data-timer-id="30a5" data-type="to-date" data-target-date="Thu, 20 Jan 2022 01:51:00 GMT" data-for="per-visitor" data-direction="down" data-time-left="750m" data-target-number="100" data-start-time="Mon, 27 Oct 2025 15:26:30 GMT" data-frequency="1s" data-after-count="none" data-redirect-url="https://" data-animation-name="customAnimationIn" data-animation-duration="1500">
+        <div class="u-align-center-sm u-align-center-xs u-countdown u-countdown-1" data-timer-id="30a5" data-type="to-date" data-target-date="Fri, 26 Jun 2026 16:00:00 GMT" data-for="per-visitor" data-direction="down" data-time-left="750m" data-target-number="100" data-start-time="Mon, 27 Oct 2025 15:26:30 GMT" data-frequency="1s" data-after-count="none" data-redirect-url="https://" data-animation-name="customAnimationIn" data-animation-duration="1500">
           <div class="u-countdown-wrapper u-spacing-20">
             <div class="u-border-1 u-border-color-var u-countdown-item u-countdown-years u-hidden u-radius u-spacing-10 u-countdown-item-1">
               <div class="u-countdown-counter u-custom-font u-font-playfair-display u-countdown-counter-1"><div class="u-countdown-number u-text-custom-color-8">0</div><div class="u-countdown-number u-hidden u-text-custom-color-8">0</div></div>
@@ -1502,146 +1502,7 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       100%{opacity:0; transform:scale(1.25)}
     }
   </style>
-
- <script>
-/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
-(() => {
-  // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 19, 2026
-  const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
-
-  // Inject CSS once
-  function ensureCSS() {
-    if (document.getElementById('wm-countdown-triple-css')) return;
-    const s = document.createElement('style');
-    s.id = 'wm-countdown-triple-css';
-    s.textContent = `
-      .u-countdown.wm-triple .u-countdown-seconds,
-      .u-countdown.wm-triple .u-countdown-separator-4,
-      .u-countdown.wm-triple .u-countdown-years,
-      .u-countdown.wm-triple .u-countdown-separator-1,
-      .u-countdown.wm-triple .u-countdown-separator-5,
-      .u-countdown.wm-triple .u-countdown-numbers { display:none !important; }
-
-      .u-countdown.wm-triple .u-countdown-days,
-      .u-countdown.wm-triple .u-countdown-hours,
-      .u-countdown.wm-triple .u-countdown-minutes,
-      .u-countdown.wm-triple .u-countdown-separator-2,
-      .u-countdown.wm-triple .u-countdown-separator-3 { display:inline-flex !important; }
-    `;
-    document.head.appendChild(s);
-  }
-
-  function compute(nowMs) {
-    const diff = Math.max(0, TARGET_UTC_MS - nowMs);
-    const total = Math.floor(diff / 1000);
-    const days    = Math.floor(total / 86400);
-    const hours   = Math.floor((total % 86400) / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    return { days, hours, minutes };
-  }
-
-  function digitsInto(counterEl, value, minLen) {
-    if (!counterEl) return;
-    const str = String(value).padStart(minLen, '0');
-    counterEl.innerHTML = '';
-    for (const ch of str) {
-      const d = document.createElement('div');
-      d.className = 'u-countdown-number u-text-custom-color-8';
-      d.textContent = ch;
-      counterEl.appendChild(d);
-    }
-  }
-
-  // ✅ Key trick: remove data-* (Nicepage reads these) and clone node to drop Nicepage timers/listeners.
-  function neutralizeNicepageCountdown(wrap){
-    if (!wrap || wrap._wmNeutralized) return wrap;
-    wrap._wmNeutralized = true;
-
-    // remove all data-* so nicepage.js can't reinitialize it
-    Array.from(wrap.attributes).forEach(a => {
-      if (a.name.startsWith('data-')) wrap.removeAttribute(a.name);
-    });
-
-    // clone replaces node → drops any handlers Nicepage attached
-    const clone = wrap.cloneNode(true);
-    wrap.replaceWith(clone);
-    return clone;
-  }
-
-  // Wait until Nicepage has created the internal markup we need
-  function isReady(wrap){
-    return !!(
-      wrap &&
-      wrap.querySelector('.u-countdown-wrapper') &&
-      wrap.querySelector('.u-countdown-days .u-countdown-counter') &&
-      wrap.querySelector('.u-countdown-hours .u-countdown-counter') &&
-      wrap.querySelector('.u-countdown-minutes .u-countdown-counter')
-    );
-  }
-
-  function initOne(wrap){
-    if (!wrap || wrap._wmTripleInit) return;
-    wrap._wmTripleInit = true;
-
-    wrap = neutralizeNicepageCountdown(wrap);
-    wrap.classList.add('wm-triple');
-    ensureCSS();
-
-    const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
-    const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
-    const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
-
-    // Safety: force the correct blocks visible/hidden even if markup shipped with u-hidden
-    wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
-
-    const sec = wrap.querySelector('.u-countdown-seconds');
-    const sep4 = wrap.querySelector('.u-countdown-separator-4');
-    if (sec) sec.style.display = 'none';
-    if (sep4) sep4.style.display = 'none';
-
-    function tick(){
-      const { days, hours, minutes } = compute(Date.now());
-      digitsInto(daysEl, days, Math.max(2, String(days).length));
-      digitsInto(hoursEl, hours, 2);
-      digitsInto(minutesEl, minutes, 2);
-    }
-
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  function start(){
-    const wraps = Array.from(document.querySelectorAll('.u-countdown'));
-    if (!wraps.length) return;
-
-    const t0 = performance.now();
-    const HARD_STOP_MS = 6000;
-
-    (function retry(){
-      let initedAny = false;
-
-      wraps.forEach(w => {
-        if (w._wmTripleInit) { initedAny = true; return; }
-        if (isReady(w)) { initOne(w); initedAny = true; }
-      });
-
-      if (!initedAny && (performance.now() - t0) < HARD_STOP_MS) {
-        requestAnimationFrame(retry);
-      }
-    })();
-  }
-
-  // Run at DOM ready + load (first visit sometimes needs load)
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once:true });
-  } else {
-    start();
-  }
-  window.addEventListener('load', start, { once:true });
-})();
-</script>
+    
   <script>
   /* Top scroll progress line – idle boot + passive listeners */
   (() => {
@@ -1921,3 +1782,144 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       e.preventDefault();
       // Use same tab – more reliable on mobile than window.open
       window.location.href = url;
+ <script>
+/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
+(() => {
+  // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 19, 2026
+  const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
+
+  // Inject CSS once
+  function ensureCSS() {
+    if (document.getElementById('wm-countdown-triple-css')) return;
+    const s = document.createElement('style');
+    s.id = 'wm-countdown-triple-css';
+    s.textContent = `
+      .u-countdown.wm-triple .u-countdown-seconds,
+      .u-countdown.wm-triple .u-countdown-separator-4,
+      .u-countdown.wm-triple .u-countdown-years,
+      .u-countdown.wm-triple .u-countdown-separator-1,
+      .u-countdown.wm-triple .u-countdown-separator-5,
+      .u-countdown.wm-triple .u-countdown-numbers { display:none !important; }
+
+      .u-countdown.wm-triple .u-countdown-days,
+      .u-countdown.wm-triple .u-countdown-hours,
+      .u-countdown.wm-triple .u-countdown-minutes,
+      .u-countdown.wm-triple .u-countdown-separator-2,
+      .u-countdown.wm-triple .u-countdown-separator-3 { display:inline-flex !important; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function compute(nowMs) {
+    const diff = Math.max(0, TARGET_UTC_MS - nowMs);
+    const total = Math.floor(diff / 1000);
+    const days    = Math.floor(total / 86400);
+    const hours   = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    return { days, hours, minutes };
+  }
+
+  function digitsInto(counterEl, value, minLen) {
+    if (!counterEl) return;
+    const str = String(value).padStart(minLen, '0');
+    counterEl.innerHTML = '';
+    for (const ch of str) {
+      const d = document.createElement('div');
+      d.className = 'u-countdown-number u-text-custom-color-8';
+      d.textContent = ch;
+      counterEl.appendChild(d);
+    }
+  }
+
+  // ✅ Key trick: remove data-* (Nicepage reads these) and clone node to drop Nicepage timers/listeners.
+  function neutralizeNicepageCountdown(wrap){
+    if (!wrap || wrap._wmNeutralized) return wrap;
+    wrap._wmNeutralized = true;
+
+    // remove all data-* so nicepage.js can't reinitialize it
+    Array.from(wrap.attributes).forEach(a => {
+      if (a.name.startsWith('data-')) wrap.removeAttribute(a.name);
+    });
+
+    // clone replaces node → drops any handlers Nicepage attached
+    const clone = wrap.cloneNode(true);
+    wrap.replaceWith(clone);
+    return clone;
+  }
+
+  // Wait until Nicepage has created the internal markup we need
+  function isReady(wrap){
+    return !!(
+      wrap &&
+      wrap.querySelector('.u-countdown-wrapper') &&
+      wrap.querySelector('.u-countdown-days .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-hours .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-minutes .u-countdown-counter')
+    );
+  }
+
+  function initOne(wrap){
+    if (!wrap || wrap._wmTripleInit) return;
+    wrap._wmTripleInit = true;
+
+    wrap = neutralizeNicepageCountdown(wrap);
+    wrap.classList.add('wm-triple');
+    ensureCSS();
+
+    const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
+    const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
+    const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
+
+    // Safety: force the correct blocks visible/hidden even if markup shipped with u-hidden
+    wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
+    wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
+    wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
+
+    const sec = wrap.querySelector('.u-countdown-seconds');
+    const sep4 = wrap.querySelector('.u-countdown-separator-4');
+    if (sec) sec.style.display = 'none';
+    if (sep4) sep4.style.display = 'none';
+
+    function tick(){
+      const { days, hours, minutes } = compute(Date.now());
+      digitsInto(daysEl, days, Math.max(2, String(days).length));
+      digitsInto(hoursEl, hours, 2);
+      digitsInto(minutesEl, minutes, 2);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  function start(){
+    const wraps = Array.from(document.querySelectorAll('.u-countdown'));
+    if (!wraps.length) return;
+
+    const t0 = performance.now();
+    const HARD_STOP_MS = 6000;
+
+    (function retry(){
+      let initedAny = false;
+
+      wraps.forEach(w => {
+        if (w._wmTripleInit) { initedAny = true; return; }
+        if (isReady(w)) { initOne(w); initedAny = true; }
+      });
+
+      if (!initedAny && (performance.now() - t0) < HARD_STOP_MS) {
+        requestAnimationFrame(retry);
+      }
+    })();
+  }
+
+  // Run at DOM ready + load (first visit sometimes needs load)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once:true });
+  } else {
+    start();
+  }
+  window.addEventListener('load', start, { once:true });
+})();
+</script>
+</body>
+</html>
