@@ -1,66 +1,112 @@
 <!DOCTYPE html>
-<html style="font-size: 16px;" lang="en"><head>
+<html style="font-size: 16px;" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Optional (but good): wm-pack.css early so its styles apply ASAP -->
   <link rel="stylesheet" href="css/wm-pack.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
 
-    <!-- Performance: preconnects for Google Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- ================= FONT PERFORMANCE (VERY IMPORTANT) ================= -->
 
-    <!-- Preload hero image so it paints ASAP -->
-    <link rel="preload" as="image" href="images/IMG_8768.JPG" imagesizes="(max-width: 768px) 100vw, 720px" fetchpriority="high">
+  <!-- Preconnect first -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Tame parallax/scroll jank globally -->
-    <style>
-      .u-parallax, .skrollable { background-attachment: scroll !important; transform: none !important; }
-    </style>
+  <!-- Load Google Fonts EARLY -->
+  <link id="u-page-google-font" rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?display=swap&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800">
 
-<!-- ✅ FIX: stop the animated bird flipping on mobile -->
+  <!-- Hide initials until fonts are ready -->
   <style>
-/* If a parent is flipping it, unflip the image */
-.u-image-5{
-  transform: scaleX(1) !important;
-  -webkit-transform: scaleX(1) !important;
-}
-</style>
-    <meta name="keywords" content="INTUITIVE, Your design is your passion, Key Features, Pricing Plan, Empire State Building">
-    <meta name="description" content="">
-    <title>3 English</title>
-    <link rel="stylesheet" href="nicepage.css" media="screen">
-<link rel="stylesheet" href="3-English.css" media="screen">
-    <script class="u-script" type="text/javascript" src="jquery.js" defer=""></script>
-    <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
-    <meta name="generator" content="Nicepage 7.15.3, nicepage.com">
-
-    <link id="u-page-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900">
-    <!-- ✅ FIXED: properly closed JSON-LD -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "",
-      "logo": "images/ChatGPTImageOct8202503_49_57PM74.png"
+    html.wm-fonts-loading .wm-initial {
+      visibility: hidden;
     }
-    </script>
+  </style>
 
-    <meta name="theme-color" content="#478ac9">
-    <meta property="og:title" content="3 English">
-    <meta property="og:type" content="website">
-  <meta name="referrer" content="origin"><meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
-  <body data-path-to-root="./" data-include-products="false" class="u-body u-clearfix u-grey-90 u-overlap u-xl-mode" data-lang="en">
-    
-  <header class="u-clearfix u-header u-header" id="header"><div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-top-xl u-sheet-1">
-        <a href="#" class="u-align-center u-image u-logo u-image-1" data-image-width="1024" data-image-height="1536">
-          <img src="images/ChatGPTImageOct8202503_49_57PM74.png" class="u-logo-image u-logo-image-1" loading="lazy" decoding="async" alt="Logo">
-        </a>
-      </div></header>
+  <script>
+    document.documentElement.classList.add('wm-fonts-loading');
+    (function () {
+      const done = () =>
+        document.documentElement.classList.remove('wm-fonts-loading');
+
+      if (document.fonts && document.fonts.load) {
+        Promise.race([
+          document.fonts.load('1em "Playfair Display"'),
+          new Promise(r => setTimeout(r, 1500))
+        ]).then(done, done);
+      } else {
+        window.addEventListener('load', done, { once: true });
+      }
+    })();
+  </script>
+
+  <!-- ================= IMAGES / VISUAL FIXES ================= -->
+
+  <!-- Preload hero image -->
+  <link rel="preload" as="image"
+        href="images/IMG_8768.JPG"
+        fetchpriority="high">
+
+  <!-- Parallax safety -->
+  <style>
+    .u-parallax, .skrollable {
+      background-attachment: scroll !important;
+      transform: none !important;
+    }
+  </style>
+
+  <!-- Stop animated bird flipping -->
+  <style>
+    .u-image-5{
+      transform: none !important;
+      -webkit-transform: none !important;
+    }
+  </style>
+
+  <!-- ================= NICEPAGE CORE ================= -->
+
+  <link rel="stylesheet" href="nicepage.css" media="screen">
+  <link rel="stylesheet" href="3-English.css" media="screen">
+
+  <script src="jquery.js" defer></script>
+  <script src="nicepage.js" defer></script>
+
+  <!-- ================= META ================= -->
+
+  <title>3 English</title>
+  <meta name="generator" content="Nicepage 7.15.3">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "",
+    "logo": "images/ChatGPTImageOct8202503_49_57PM74.png"
+  }
+  </script>
+
+  <meta name="theme-color" content="#478ac9">
+  <meta property="og:title" content="3 English">
+  <meta property="og:type" content="website">
+</head>
+
+<body data-path-to-root="./" data-include-products="false"
+      class="u-body u-clearfix u-grey-90 u-overlap u-xl-mode"
+      data-lang="en">
+
+  <header class="u-clearfix u-header u-header" id="header">
+    <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-top-xl u-sheet-1">
+      <a href="#" class="u-align-center u-image u-logo u-image-1" data-image-width="1024" data-image-height="1536">
+        <img src="images/ChatGPTImageOct8202503_49_57PM74.png" class="u-logo-image u-logo-image-1" alt="Logo">
+      </a>
+    </div>
+  </header>
     <section class="skrollable u-align-center u-clearfix u-container-align-center u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xl u-image u-section-1" src="" data-image-width="1024" data-image-height="1536" id="sec-f2b1">
       <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-sheet-1">
         <img class="custom-expanded u-align-center-sm u-align-center-xs u-border-6 u-border-color-var u-image u-image-round u-radius u-image-1" src="images/IMG_8768.JPG" alt="Whitney &amp; Marc" data-image-width="428" data-image-height="640" width="428" height="640" decoding="async" fetchpriority="high">
-        <h1 class="u-align-center u-custom-font u-text u-text-color-var u-text-default u-title u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">M</h1>
-        <h1 class="u-align-center u-custom-font u-text u-text-color-var u-title u-text-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">W </h1>
+        <h1 class="u-align-center u-custom-font u-text u-text-color-var u-text-default u-title u-text-1 wm-initial" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">M</h1>
+        <h1 class="u-align-center u-custom-font u-text u-text-color-var u-title u-text-2 wm-initial" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">W </h1>
         <h1 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-color-var u-text-default u-title u-text-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"><span style="font-weight: 400;">H</span><span style="font-weight: 400;">ITNEY<br>&amp;<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;ARC </span>
         </h1>
         <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-2" src="images/animated-butterfly-image-0115.gif" alt="" data-image-width="35" data-image-height="35" data-animation-name="customAnimationIn" data-animation-duration="4000" data-animation-delay="0" loading="lazy" decoding="async" width="35" height="35">
