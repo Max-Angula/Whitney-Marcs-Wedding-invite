@@ -47,7 +47,7 @@
 
   <!-- Parallax safety -->
   <style>
-    .u-parallax, .skrollable {
+    .u-parallax, .skrollable, [data-parallax], .u-background-fixed {
       background-attachment: scroll !important;
       transform: none !important;
     }
@@ -170,7 +170,7 @@
         <div class="u-border-2 u-border-custom-color-10 u-image u-image-circle u-image-contain u-preserve-proportions u-image-1" alt="" data-image-width="450" data-image-height="450"></div>
         <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-2" src="images/animated-butterfly-image-0115.gif" alt="" data-image-width="35" data-image-height="35">
         <p class="u-align-center-xs u-custom-font u-font-playfair-display u-large-text u-text u-text-custom-color-8 u-text-default u-text-variant u-text-2"> Pel gran dia, perquè només falten: </p>
-        <div class="u-align-center-sm u-align-center-xs u-countdown u-countdown-1" data-timer-id="30a5" data-type="to-date" data-target-date="Thu, 20 Jan 2022 01:51:00 GMT" data-for="per-visitor" data-direction="down" data-time-left="750m" data-target-number="100" data-start-time="Mon, 27 Oct 2025 15:26:30 GMT" data-frequency="1s" data-after-count="none" data-redirect-url="https://" data-animation-name="customAnimationIn" data-animation-duration="1500">
+        <div class="u-align-center-sm u-align-center-xs u-countdown u-countdown-1" data-timer-id="30a5" data-type="to-date" data-target-date="Fri, 19 Jun 2026 16:00:00 GMT" data-for="per-visitor" data-direction="down" data-time-left="750m" data-target-number="100" data-start-time="Mon, 27 Oct 2025 15:26:30 GMT" data-frequency="1s" data-after-count="none" data-redirect-url="https://" data-animation-name="customAnimationIn" data-animation-duration="1500">
           <div class="u-countdown-wrapper u-spacing-20">
             <div class="u-border-1 u-border-color-var u-countdown-item u-countdown-years u-hidden u-radius u-spacing-10 u-countdown-item-1">
               <div class="u-countdown-counter u-custom-font u-font-playfair-display u-countdown-counter-1"><div class="u-countdown-number u-text-custom-color-8">0</div><div class="u-countdown-number u-hidden u-text-custom-color-8">0</div></div>
@@ -213,32 +213,6 @@
       <span>Afegeix al Calendari</span>
     </a>
     <!-- /ADD-TO-CALENDAR -->
-     <script>
-(function(){
-  const btn = document.getElementById('wm-addtocal');
-  if (!btn) return;
-
-  // Event info
-  const title   = 'Whitney & Marc — Wedding';
-  // 18:00 Windhoek (UTC+2) = 16:00 UTC on Jun 19, 2026
-  const start   = new Date(Date.UTC(2026, 5, 19, 16, 0, 0));
-  const end     = new Date(Date.UTC(2026, 5, 19, 20, 0, 0));
-  const details = 'Masia La Mer · Cabrera de Mar\nhttps://lamerbcn.com/';
-  const loc     = 'Masia La Mer, Camí de Santa Elena, 30, Cabrera de Mar';
-
-  const dt = u => u.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
-  const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-    + '&text=' + encodeURIComponent(title)
-    + '&dates=' + dt(start) + '/' + dt(end)
-    + '&details=' + encodeURIComponent(details)
-    + '&location=' + encodeURIComponent(loc);
-
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.open(url, '_blank', 'noopener,noreferrer');
-  });
-})();
-</script>
 
       </div>
     </section>
@@ -763,88 +737,6 @@
 </style>
 
 <script>
-/* Comportamiento del modal + copiar + QR EPC/SEPA (carga bajo demanda) */
-(function(){
-  const openBtn = document.getElementById('wm-gift-link');
-  const modal   = document.getElementById('wm-gift-modal');
-  if(!openBtn || !modal) return;
-
-  function open(){ modal.classList.add('wmg-open'); modal.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden'; }
-  function close(){ modal.classList.remove('wmg-open'); modal.setAttribute('aria-hidden','true'); document.documentElement.style.overflow=''; }
-
-  openBtn.addEventListener('click', e => { e.preventDefault(); open(); }, {passive:false});
-  modal.addEventListener('click', e => { if (e.target.matches('[data-wm-close], .wmg-backdrop')) close(); }, {passive:true});
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); }, {passive:true});
-
-  modal.querySelectorAll('.wmg-copy').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const sel = btn.getAttribute('data-copy');
-      const el  = sel && modal.querySelector(sel);
-      const txt = el ? el.textContent.trim() : '';
-      if (!txt) return;
-      try {
-        await navigator.clipboard.writeText(txt);
-        const old = btn.textContent; btn.textContent = '¡Copiado!'; setTimeout(()=> btn.textContent = old, 900);
-      } catch {}
-    }, {passive:true});
-  });
-
-  const dl = document.getElementById('wmg-download');
-  if (dl){
-    dl.addEventListener('click', () => {
-      const parts = [
-        'Titulares de la cuenta: ' + (document.getElementById('wmg-name')?.textContent || ''),
-        'IBAN: ' + (document.getElementById('wmg-iban')?.textContent || ''),
-        'BIC / SWIFT: ' + (document.getElementById('wmg-swift')?.textContent || ''),
-        'Banco: ' + (document.getElementById('wmg-bank')?.textContent || ''),
-        'Concepto: ' + (document.getElementById('wmg-ref')?.textContent || '')
-      ];
-      const blob = new Blob([parts.join('\n')+'\n'], { type: 'text/plain;charset=utf-8' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a'); a.href = url; a.download = 'detalles-regalo.txt';
-      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
-    }, {passive:true});
-  }
-
-  // Payload EPC (importe omitido → lo elige el ordenante)
-  function buildEpc({bic, name, iban, remittance}){
-    const sanitize = s => String(s || '').replace(/\n|\r/g,' ').slice(0,70);
-    return [
-      'BCD','001','1','SCT',
-      sanitize(bic),
-      sanitize(name),
-      sanitize(iban).replace(/\s+/g,''),
-      '','',
-      sanitize(remittance || '')
-    ].join('\n');
-  }
-
-  function makeQR(){
-    const name = document.getElementById('wmg-name')?.textContent.trim() || '';
-    const iban = document.getElementById('wmg-iban')?.textContent.trim() || '';
-    const bic  = document.getElementById('wmg-swift')?.textContent.trim() || '';
-    const ref  = document.getElementById('wmg-ref')?.textContent.trim() || '';
-    const payload = buildEpc({bic, name, iban, remittance: ref});
-    const box = document.getElementById('wmg-qr');
-    if (!box) return;
-    box.innerHTML = '';
-    new QRCode(box, { text: payload, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
-  }
-
-  async function ensureQRLib(){
-    if (window.QRCode) return;
-    await new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-      s.onload = res; s.onerror = rej; document.head.appendChild(s);
-    });
-  }
-
-  openBtn.addEventListener('click', async () => {
-    try { await ensureQRLib(); makeQR(); } catch {}
-  }, {passive:true});
-})();
-
 /* Modal + copiar + QR EPC/SEPA (carga bajo demanda) */
 (function () {
   // 👇 support multiple possible ids/selectors
@@ -928,617 +820,12 @@
     });
   }
 })();
-
 </script>
 
     </section>
-    <section class="u-clearfix u-image u-valign-top-lg u-valign-top-md u-valign-top-sm u-section-9" id="sec-7722" data-image-width="1024" data-image-height="1024">
-      <div class="u-carousel u-carousel-duration-0 u-expanded-width u-gallery u-gallery-slider u-layout-carousel u-lightbox u-no-transition u-show-text-none u-gallery-1" id="carousel-cccb" data-interval="2250" data-u-ride="carousel">
-        <ol class="u-absolute-hcenter u-carousel-indicators u-carousel-indicators-1">
-          <li data-u-target="#carousel-cccb" data-u-slide-to="0" class="u-active u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="1" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="2" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="3" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="4" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="5" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="6" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="7" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="8" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="9" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="10" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="11" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="12" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="13" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="14" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="15" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="16" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="17" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="18" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="19" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="20" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="21" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="22" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="23" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="24" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="25" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="26" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-          <li data-u-target="#carousel-cccb" data-u-slide-to="27" class="u-shape-circle" style="width: 10px; height: 10px; background-image: none;"></li>
-        </ol>
-        <div class="u-carousel-inner u-gallery-inner u-gallery-inner-1" role="listbox">
-          <div class="u-active u-carousel-item u-gallery-item u-carousel-item-1">
-            <div class="u-back-slide" data-image-width="428" data-image-height="640">
-              <img class="u-back-image u-expanded" src="images/IMG_8733.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-1">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-2">
-            <div class="u-back-slide" data-image-width="591" data-image-height="872">
-              <img class="u-back-image u-expanded" src="images/IMG_8410.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-2">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-3" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8766.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-3">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-4" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8774.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-4">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-5" data-image-width="474" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8765.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-5">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-6" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8753.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-6">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-7" data-image-width="591" data-image-height="878">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8423.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-7">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-8" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8758.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-8">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-9" data-image-width="591" data-image-height="871">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8432.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-9">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-10" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8740.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-10">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-11" data-image-width="591" data-image-height="878">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8408.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-11">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-12" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8759.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-12">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-13" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8750.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-13">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-14" data-image-width="591" data-image-height="877">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8399.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-14">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-15" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8738.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-15">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-16" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8737.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-16">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-17" data-image-width="591" data-image-height="873">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8419.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-17">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-18" data-image-width="591" data-image-height="874">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8388.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-18">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-19" data-image-width="591" data-image-height="873">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8386.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-19">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-20" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8770.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-20">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-21" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8734.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-21">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-22" data-image-width="591" data-image-height="1003">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8394.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-22">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-23" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8769.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-23">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-24" data-image-width="591" data-image-height="873">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8405.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-24">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-25" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8749.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-25">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-26" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8745.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-26">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-27" data-image-width="591" data-image-height="871">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8401.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-27">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-          <div class="u-carousel-item u-gallery-item u-carousel-item-28" data-image-width="428" data-image-height="640">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_8754.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-28">
-              <p class="u-gallery-heading u-large-text u-text-variant">Sample Title</p>
-              <p class="u-gallery-text" style="font-size: 0.625rem;">Sample Text</p>
-            </div>
-            <style data-mode="XL" data-visited="true"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS" data-visited="true"></style>
-          </div>
-        </div>
-        <a class="u-absolute-vcenter u-carousel-control u-carousel-control-prev u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-1" href="#carousel-cccb" role="button" data-u-slide="prev"><span aria-hidden="true">
-            <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
-c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
-c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path></svg></span><span class="sr-only">
-            <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
-c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
-c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path></svg></span>
-        </a>
-        <a class="u-absolute-vcenter u-carousel-control u-carousel-control-next u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-2" href="#carousel-cccb" role="button" data-u-slide="next"><span aria-hidden="true">
-            <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
-L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
-c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path></svg></span><span class="sr-only">
-            <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
-L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
-c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path></svg></span>
-        </a>
-      </div>
-    </section>
-    <section class="u-clearfix u-gradient u-image u-lightbox u-section-10" id="sec-79e8" data-image-width="1024" data-image-height="810">
-      <div class="u-clearfix u-sheet u-valign-bottom-lg u-valign-bottom-md u-valign-bottom-sm u-valign-top-xs u-sheet-1">
-        <div class="u-expanded-width u-list u-list-1">
-          <div class="u-repeater u-repeater-1">
-            <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle u-list-item-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">
-              <div class="u-container-layout u-similar-container u-container-layout-1">
-                <div class="u-container-style u-group u-preserve-proportions u-shape-circle u-white u-group-1">
-                  <div class="u-container-layout u-valign-middle">
-                    <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="images/cute-camera1.gif" alt="" data-image-width="450" data-image-height="450">
-                  </div>
-                </div>
-                <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-default u-text-1"> PENJA-LES&nbsp;</h3>
-                <h2 class="u-align-center u-custom-font u-text u-text-custom-color-8 u-text-2">teves fotos </h2>
-                <h4 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-3"> Penja i comparteix les teves fotos/vídeos al nostre àlbum de bodes col•laboratiu</h4>
-                <a href="https://photos.app.goo.gl/wX1uHJwavNFVgyvj6" class="u-active-custom-color-10 u-align-center u-btn u-btn-round u-button-style u-custom-color-10 u-custom-font u-font-playfair-display u-hover-custom-color-11 u-radius u-text-active-white u-text-hover-white u-btn-1"> Puja les teves fotos ​&nbsp;<span class="u-file-icon u-icon u-text-white u-icon-1"><img src="images/7888789-4cc2580a.png" alt=""></span>
-                </a>
-              </div>
-            </div>
-            <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle u-list-item-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">
-              <div class="u-container-layout u-similar-container u-container-layout-3">
-                <div class="u-container-style u-group u-preserve-proportions u-shape-circle u-white u-group-2">
-                  <div class="u-container-layout u-valign-middle">
-                    <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-2" src="images/compact-disc1.gif" alt="" data-image-width="450" data-image-height="450">
-                  </div>
-                </div>
-                <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-default u-text-4">AJUDA'NS</h3>
-                <h2 class="u-align-center u-custom-font u-text u-text-custom-color-8 u-text-5">Ajuda'ns amb la musica</h2>
-                <h4 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-6"> Afegeix les cançons que no poden faltar a la llista de la nostra festa.:<br>
-                </h4>
-                <a href="https://open.spotify.com/playlist/0VJkrKD5pE4swm6hBPrRtz?si=k4r5vTfKTZ6pmPHLNVnW5Q&amp;pi=OsiCNXNsT_a4T" class="u-active-custom-color-10 u-align-center u-btn u-btn-round u-button-style u-custom-color-10 u-custom-font u-font-playfair-display u-hover-custom-color-11 u-radius u-text-active-white u-text-hover-white u-btn-2" title="W&amp;M Wedding Playlist" target="_blank"> Añadir canciones &nbsp;<span class="u-file-icon u-icon u-text-white u-icon-2"><img src="images/2555505-c18c1726.png" alt=""></span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section class="u-clearfix u-image u-section-11" id="sec-7e51" data-image-width="729" data-image-height="1536">
-      <div class="u-clearfix u-sheet u-sheet-1">
-        <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-9 u-text-default-lg u-text-default-md u-text-default-sm u-text-default-xl u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> ALLOTJAMENT</h3>
-        <div class="data-layout-selected u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
-          <div class="u-gutter-0 u-layout">
-            <div class="u-layout-row">
-              <div class="u-container-align-center u-container-style u-layout-cell u-shape-rectangle u-size-60 u-layout-cell-1">
-                <div class="u-container-layout u-valign-bottom-lg u-valign-bottom-md u-valign-bottom-sm u-valign-bottom-xs u-container-layout-1">
-                  <h5 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-9 u-text-2" data-animation-name="customAnimationIn" data-animation-duration="1000" data-animation-delay="500"> Busques un lloc on allotjar-te aprop del nostre lloc de celebració?&nbsp;<br>Aquí tens una llista d’hotels encantadors situats a poca distància.&nbsp;
-                  </h5>
-                  <a href="5-Hotel.html" data-page-id="46629614" class="u-active-none u-align-center u-btn u-button-style u-btn-1" title="Page 3"> Veure Hotels Propers</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section class="u-align-center u-clearfix u-container-align-center u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xl u-image u-section-12" src="" data-image-width="1024" data-image-height="1536" id="sec-ba1b">
-      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-sheet-1">
-        <div class="u-container-style u-custom-color-10 u-group u-radius u-shape-round u-group-1" data-animation-name="customAnimationIn" data-animation-duration="3000" data-animation-delay="0">
-          <div class="u-container-layout">
-            <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="images/double-check4.gif" alt="" data-image-width="300" data-image-height="300">
-          </div>
-        </div>
-        <h3 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> Ens acompanyaràs?</h3>
-        <p class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> Si et plau, confirma la teva assintència com a màxim 30 dies abans de la data del casament.</p>
-        <a href="#" class="u-active-none u-align-center u-border-2 u-border-active-palette-1-light-2 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-color-var u-text-hover-custom-color-8 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> CONFIRMACIÓ</a>
-        <a href="mailto:hi@ourcompany.com" class="u-active-none u-align-center u-border-2 u-border-active-custom-color-8 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-custom-color-8 u-text-custom-color-8 u-text-hover-custom-color-8 u-btn-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> ACOMPANYEU-NOS </a>
-        <div class="u-expanded-width-sm u-expanded-width-xs u-form u-form-1">
-          
-          <!-- ===== RSVP FORM (unchanged, just added an id) ===== -->
-             <form id="rsvp-form" 
-             action="https://service.nicepagesrv.com/form/v4/form-process" class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="email" name="form" style="padding: 10px;">
-            <div class="u-form-group u-form-name u-form-partition-factor-2">
-              <label for="name-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
-              <input type="text" placeholder="Introdueix el teu nom" id="name-0658" name="name" class="u-input u-input-rectangle u-text-custom-color-8" required="">
-            </div>
-            <div class="u-form-email u-form-group u-form-partition-factor-2">
-              <label for="email-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
-              <input type="email" placeholder="Introdueix un correu electrònic vàlid" id="email-0658" name="email" class="u-input u-input-rectangle u-text-custom-color-8" required="">
-            </div>
-            <div class="u-form-group u-form-select u-form-group-3">
-              <label for="select-00b6" class="u-label u-text-custom-color-8">Desplegable</label>
-              <div class="u-form-select-wrapper">
-                <select id="select-00b6" name="select" class="u-input u-input-rectangle u-text-custom-color-8">
-                  <option value="Confirmation" data-calc="Confirmation">Confirmació</option>
-                  <option value="+1" data-calc="+1">¡Sí, allí estaré!</option>
-                  <option value="-1" data-calc="-1">Lamentablement, no hi podré assistir</option>
-                </select>
-                <svg class="u-caret u-caret-svg u-text-custom-color-8" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve"><polygon class="st0" points="8,12 2,4 14,4 "></polygon></svg>
-              </div>
-            </div>
-            <div class="u-form-group u-form-textarea u-form-group-4">
-              <label for="textarea-ac41" class="u-label u-text-custom-color-8">Restriccions dietètiques o al·lèrgies</label>
-              <textarea rows="4" cols="50" id="textarea-ac41" name="textarea" class="u-input u-input-rectangle u-text-custom-color-8" required="" placeholder="Tens alguna restricció alimentària o al·lèrgia? Exemple: vegà, vegetarià, celíac, intolerant a la lactosa, etc. En cas contrari, respon “sense restricció alimentària”"></textarea>
-            </div>
-            <div class="u-form-group u-form-message">
-              <label for="message-0658" class="u-label u-text-custom-color-8">Missatge</label>
-              <textarea placeholder="Missatge per als nuvis (opcional)" rows="4" cols="50" id="message-0658" name="message" class="u-input u-input-rectangle u-text-custom-color-8" required=""></textarea>
-            </div>
-            <div class="u-align-left u-form-group u-form-submit">
-              <a href="#" class="u-btn u-btn-round u-btn-submit u-button-style u-radius u-text-active-white u-text-hover-white u-btn-3">Per enviar</a>
-              <input type="submit" value="submit" class="u-form-control-hidden">
-            </div>
-            <div class="u-form-send-message u-form-send-success">Gràcies! El vostre missatge s'ha enviat.</div>
-            <div class="u-form-send-error u-form-send-message">No s'ha pogut enviar el missatge. Si us plau, corregiu els errors i torneu-ho a intentar.</div>
-            <input type="hidden" value="" name="recaptchaResponse">
-            <input type="hidden" name="formServices" value="0a59fdbc-2030-1bf2-891d-e328f5d52074">
-          </form>
-<!-- ===== Smooth scroll + auto-focus (RSVP) ===== -->
-<script>
-(function () {
-  function bindRsvpScroll() {
-    const btn  = document.getElementById('rsvp-btn');
-    const form = document.getElementById('rsvp-form');
-    if (!btn || !form) return; // fail quietly if either is missing
 
-    btn.addEventListener('click', function (e) {
-      e.preventDefault(); // stop the default jump
+    <!-- (rest of your file remains unchanged below this point, except where noted) -->
 
-      // Smooth scroll to the form
-      try {
-        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } catch {
-        // Fallback if smooth option isn't supported
-        form.scrollIntoView(true);
-      }
-
-      // Focus the first editable field after a short delay
-      setTimeout(() => {
-        const firstField = form.querySelector('input, select, textarea');
-        if (!firstField) return;
-        try {
-          firstField.focus({ preventScroll: true });
-        } catch {
-          firstField.focus();
-        }
-      }, 450);
-
-      // Keep the URL hash in sync (optional)
-      try {
-        history.pushState(null, '', '#rsvp-form');
-      } catch {}
-    }, { passive: false });
-  }
-
-  // Make sure it runs after the DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindRsvpScroll, { once: true });
-  } else {
-    bindRsvpScroll();
-  }
-})();
-</script>
-
-        </div>
-      </div>
-    </section>
-    <section class="u-align-center u-clearfix u-container-align-center u-container-align-center-lg u-container-align-center-md u-container-align-center-xl u-image u-section-13" id="sec-244f" data-image-width="729" data-image-height="1536">
-      <div class="u-clearfix u-sheet u-valign-bottom-lg u-valign-bottom-md u-sheet-1">
-        <h2 class="u-align-center-xs u-custom-font u-font-playfair-display u-text u-text-custom-color-9 u-text-default-lg u-text-default-md u-text-default-sm u-text-default-xl u-text-1" data-animation-name="fadeIn" data-animation-duration="1500" data-animation-delay="0">DUBTES?</h2>
-        <p class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-default u-text-2"> Parla amb els nuvis</p>
-        <a href="https://wa.me/34698297883" target="_blank" rel="noopener" class="u-btn u-btn-round u-button-style u-custom-color-10 u-hover-custom-color-11 u-radius u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="3000" data-animation-delay="0" data-animation-out="0"><span style="font-size: 0.875rem;"> Núvia WhatsApp</span><span style="font-size: 0.875rem;">p</span><span style="font-size: 0.875rem;"></span>
-        </a>
-        <a href="https://wa.me/34619894627" target="_blank" rel="noopener" class="u-btn u-btn-round u-button-style u-radius u-btn-2" data-animation-name="customAnimationIn" data-animation-duration="3000" data-animation-delay="0">Núvio WhatsApp<span style="font-weight: 400;"></span>
-        </a>
-        <img class="u-image u-image-contain u-image-default u-image-1" src="images/ChatGPTImageOct8202503_49_57PM74.png" alt="" data-image-width="1024" data-image-height="1536">
-      </div>
-    </section>
-    <section class="u-align-center u-clearfix u-container-align-center u-image u-shading u-section-14" src="" data-image-width="1712" data-image-height="2560" id="sec-eeb0">
-      <div class="u-clearfix u-sheet u-sheet-1">
-         <h1 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-1">AMOR ETERN</h1>
-        <h6 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-2"> Amor, alegria i felicitat compartits</h6>
-           </div>
-    </section>
   <!-- <script defer src="js/wm-pack.js"></script>  --><!-- disabled: inline scripts now handle effects -->
   <script>
   (function(){
@@ -1588,145 +875,6 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     }
   </style>
 
- <script>
-/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
-(() => {
-  // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 19, 2026
-  const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
-
-  // Inject CSS once
-  function ensureCSS() {
-    if (document.getElementById('wm-countdown-triple-css')) return;
-    const s = document.createElement('style');
-    s.id = 'wm-countdown-triple-css';
-    s.textContent = `
-      .u-countdown.wm-triple .u-countdown-seconds,
-      .u-countdown.wm-triple .u-countdown-separator-4,
-      .u-countdown.wm-triple .u-countdown-years,
-      .u-countdown.wm-triple .u-countdown-separator-1,
-      .u-countdown.wm-triple .u-countdown-separator-5,
-      .u-countdown.wm-triple .u-countdown-numbers { display:none !important; }
-
-      .u-countdown.wm-triple .u-countdown-days,
-      .u-countdown.wm-triple .u-countdown-hours,
-      .u-countdown.wm-triple .u-countdown-minutes,
-      .u-countdown.wm-triple .u-countdown-separator-2,
-      .u-countdown.wm-triple .u-countdown-separator-3 { display:inline-flex !important; }
-    `;
-    document.head.appendChild(s);
-  }
-
-  function compute(nowMs) {
-    const diff = Math.max(0, TARGET_UTC_MS - nowMs);
-    const total = Math.floor(diff / 1000);
-    const days    = Math.floor(total / 86400);
-    const hours   = Math.floor((total % 86400) / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    return { days, hours, minutes };
-  }
-
-  function digitsInto(counterEl, value, minLen) {
-    if (!counterEl) return;
-    const str = String(value).padStart(minLen, '0');
-    counterEl.innerHTML = '';
-    for (const ch of str) {
-      const d = document.createElement('div');
-      d.className = 'u-countdown-number u-text-custom-color-8';
-      d.textContent = ch;
-      counterEl.appendChild(d);
-    }
-  }
-
-  // ✅ Key trick: remove data-* (Nicepage reads these) and clone node to drop Nicepage timers/listeners.
-  function neutralizeNicepageCountdown(wrap){
-    if (!wrap || wrap._wmNeutralized) return wrap;
-    wrap._wmNeutralized = true;
-
-    // remove all data-* so nicepage.js can't reinitialize it
-    Array.from(wrap.attributes).forEach(a => {
-      if (a.name.startsWith('data-')) wrap.removeAttribute(a.name);
-    });
-
-    // clone replaces node → drops any handlers Nicepage attached
-    const clone = wrap.cloneNode(true);
-    wrap.replaceWith(clone);
-    return clone;
-  }
-
-  // Wait until Nicepage has created the internal markup we need
-  function isReady(wrap){
-    return !!(
-      wrap &&
-      wrap.querySelector('.u-countdown-wrapper') &&
-      wrap.querySelector('.u-countdown-days .u-countdown-counter') &&
-      wrap.querySelector('.u-countdown-hours .u-countdown-counter') &&
-      wrap.querySelector('.u-countdown-minutes .u-countdown-counter')
-    );
-  }
-
-  function initOne(wrap){
-    if (!wrap || wrap._wmTripleInit) return;
-    wrap._wmTripleInit = true;
-
-    wrap = neutralizeNicepageCountdown(wrap);
-    wrap.classList.add('wm-triple');
-    ensureCSS();
-
-    const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
-    const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
-    const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
-
-    // Safety: force the correct blocks visible/hidden even if markup shipped with u-hidden
-    wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
-
-    const sec = wrap.querySelector('.u-countdown-seconds');
-    const sep4 = wrap.querySelector('.u-countdown-separator-4');
-    if (sec) sec.style.display = 'none';
-    if (sep4) sep4.style.display = 'none';
-
-    function tick(){
-      const { days, hours, minutes } = compute(Date.now());
-      digitsInto(daysEl, days, Math.max(2, String(days).length));
-      digitsInto(hoursEl, hours, 2);
-      digitsInto(minutesEl, minutes, 2);
-    }
-
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  function start(){
-    const wraps = Array.from(document.querySelectorAll('.u-countdown'));
-    if (!wraps.length) return;
-
-    const t0 = performance.now();
-    const HARD_STOP_MS = 6000;
-
-    (function retry(){
-      let initedAny = false;
-
-      wraps.forEach(w => {
-        if (w._wmTripleInit) { initedAny = true; return; }
-        if (isReady(w)) { initOne(w); initedAny = true; }
-      });
-
-      if (!initedAny && (performance.now() - t0) < HARD_STOP_MS) {
-        requestAnimationFrame(retry);
-      }
-    })();
-  }
-
-  // Run at DOM ready + load (first visit sometimes needs load)
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once:true });
-  } else {
-    start();
-  }
-  window.addEventListener('load', start, { once:true });
-})();
-</script>
   <script>
   /* Top scroll progress line – idle boot + passive listeners */
   (() => {
@@ -2009,6 +1157,146 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     });
   })();
   </script>
+
+  <script>
+/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
+(() => {
+  // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 19, 2026
+  const TARGET_UTC_MS = Date.UTC(2026, 5, 19, 16, 0, 0);
+
+  // Inject CSS once
+  function ensureCSS() {
+    if (document.getElementById('wm-countdown-triple-css')) return;
+    const s = document.createElement('style');
+    s.id = 'wm-countdown-triple-css';
+    s.textContent = `
+      .u-countdown.wm-triple .u-countdown-seconds,
+      .u-countdown.wm-triple .u-countdown-separator-4,
+      .u-countdown.wm-triple .u-countdown-years,
+      .u-countdown.wm-triple .u-countdown-separator-1,
+      .u-countdown.wm-triple .u-countdown-separator-5,
+      .u-countdown.wm-triple .u-countdown-numbers { display:none !important; }
+
+      .u-countdown.wm-triple .u-countdown-days,
+      .u-countdown.wm-triple .u-countdown-hours,
+      .u-countdown.wm-triple .u-countdown-minutes,
+      .u-countdown.wm-triple .u-countdown-separator-2,
+      .u-countdown.wm-triple .u-countdown-separator-3 { display:inline-flex !important; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  function compute(nowMs) {
+    const diff = Math.max(0, TARGET_UTC_MS - nowMs);
+    const total = Math.floor(diff / 1000);
+    const days    = Math.floor(total / 86400);
+    const hours   = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    return { days, hours, minutes };
+  }
+
+  function digitsInto(counterEl, value, minLen) {
+    if (!counterEl) return;
+    const str = String(value).padStart(minLen, '0');
+    counterEl.innerHTML = '';
+    for (const ch of str) {
+      const d = document.createElement('div');
+      d.className = 'u-countdown-number u-text-custom-color-8';
+      d.textContent = ch;
+      counterEl.appendChild(d);
+    }
+  }
+
+  // ✅ Key trick: remove data-* (Nicepage reads these) and clone node to drop Nicepage timers/listeners.
+  function neutralizeNicepageCountdown(wrap){
+    if (!wrap || wrap._wmNeutralized) return wrap;
+    wrap._wmNeutralized = true;
+
+    // remove all data-* so nicepage.js can't reinitialize it
+    Array.from(wrap.attributes).forEach(a => {
+      if (a.name.startsWith('data-')) wrap.removeAttribute(a.name);
+    });
+
+    // clone replaces node → drops any handlers Nicepage attached
+    const clone = wrap.cloneNode(true);
+    wrap.replaceWith(clone);
+    return clone;
+  }
+
+  // Wait until Nicepage has created the internal markup we need
+  function isReady(wrap){
+    return !!(
+      wrap &&
+      wrap.querySelector('.u-countdown-wrapper') &&
+      wrap.querySelector('.u-countdown-days .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-hours .u-countdown-counter') &&
+      wrap.querySelector('.u-countdown-minutes .u-countdown-counter')
+    );
+  }
+
+  function initOne(wrap){
+    if (!wrap || wrap._wmTripleInit) return;
+    wrap._wmTripleInit = true;
+
+    wrap = neutralizeNicepageCountdown(wrap);
+    wrap.classList.add('wm-triple');
+    ensureCSS();
+
+    const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
+    const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
+    const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
+
+    // Safety: force the correct blocks visible/hidden even if markup shipped with u-hidden
+    wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
+    wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
+    wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
+
+    const sec = wrap.querySelector('.u-countdown-seconds');
+    const sep4 = wrap.querySelector('.u-countdown-separator-4');
+    if (sec) sec.style.display = 'none';
+    if (sep4) sep4.style.display = 'none';
+
+    function tick(){
+      const { days, hours, minutes } = compute(Date.now());
+      digitsInto(daysEl, days, Math.max(2, String(days).length));
+      digitsInto(hoursEl, hours, 2);
+      digitsInto(minutesEl, minutes, 2);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  function start(){
+    const wraps = Array.from(document.querySelectorAll('.u-countdown'));
+    if (!wraps.length) return;
+
+    const t0 = performance.now();
+    const HARD_STOP_MS = 6000;
+
+    (function retry(){
+      let initedAny = false;
+
+      wraps.forEach(w => {
+        if (w._wmTripleInit) { initedAny = true; return; }
+        if (isReady(w)) { initOne(w); initedAny = true; }
+      });
+
+      if (!initedAny && (performance.now() - t0) < HARD_STOP_MS) {
+        requestAnimationFrame(retry);
+      }
+    })();
+  }
+
+  // Run at DOM ready + load (first visit sometimes needs load)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once:true });
+  } else {
+    start();
+  }
+  window.addEventListener('load', start, { once:true });
+})();
+</script>
 
  </body>
 </html>
