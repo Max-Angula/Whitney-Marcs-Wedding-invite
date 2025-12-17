@@ -1541,7 +1541,6 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       ? document.addEventListener('DOMContentLoaded', () => rIC(boot), { once:true })
       : rIC(boot);
   })();
-  </script>
 
   <!-- Back to top button -->
   <button id="wm-top" class="wm-top" aria-label="Back to top">
@@ -1550,7 +1549,6 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     </svg>
   </button>
 
-  <script>
   /* Back-to-top: minimal work, no layout thrash */
   (() => {
     const btn = document.getElementById('wm-top');
@@ -1567,9 +1565,7 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       else window.scrollTo({ top: 0, behavior: 'smooth' });
     }, { passive:true });
   })();
-  </script>
-
-  <script>
+    
   /* === Global Audio Manager (lazy src, persist, one script) — Spanish page ===
      - No network for audio until user interacts.
      - Single toggle button injected if missing (label localized).
@@ -1757,10 +1753,8 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
 
     window.addEventListener('wm:page-swapped', () => setTimeout(boot, 30));
   })();
-  </script>
 
   <!-- ✅ New, simplified Add-to-Calendar handler (single source of truth, mobile-friendly) -->
-  <script>
   (() => {
     const btn = document.getElementById('wm-addtocal');
     if (!btn) return;
@@ -1782,8 +1776,7 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       e.preventDefault();
       // Use same tab – more reliable on mobile than window.open
       window.location.href = url;
- <script>
-<script>
+
 /* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
 (() => {
   // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 26, 2026
