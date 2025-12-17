@@ -1783,12 +1783,12 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       // Use same tab – more reliable on mobile than window.open
       window.location.href = url;
  <script>
+<script>
 /* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
 (() => {
   // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 26, 2026
   const TARGET_UTC_MS = Date.UTC(2026, 5, 26, 16, 0, 0);
 
-  // Inject CSS once
   function ensureCSS() {
     if (document.getElementById('wm-countdown-triple-css')) return;
     const s = document.createElement('style');
@@ -1831,23 +1831,17 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     }
   }
 
-  // ✅ Key trick: remove data-* (Nicepage reads these) and clone node to drop Nicepage timers/listeners.
   function neutralizeNicepageCountdown(wrap){
     if (!wrap || wrap._wmNeutralized) return wrap;
     wrap._wmNeutralized = true;
-
-    // remove all data-* so nicepage.js can't reinitialize it
     Array.from(wrap.attributes).forEach(a => {
       if (a.name.startsWith('data-')) wrap.removeAttribute(a.name);
     });
-
-    // clone replaces node → drops any handlers Nicepage attached
     const clone = wrap.cloneNode(true);
     wrap.replaceWith(clone);
     return clone;
   }
 
-  // Wait until Nicepage has created the internal markup we need
   function isReady(wrap){
     return !!(
       wrap &&
@@ -1870,7 +1864,6 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
     const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
 
-    // Safety: force the correct blocks visible/hidden even if markup shipped with u-hidden
     wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
     wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
     wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
@@ -1894,25 +1887,21 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
   function start(){
     const wraps = Array.from(document.querySelectorAll('.u-countdown'));
     if (!wraps.length) return;
-
     const t0 = performance.now();
     const HARD_STOP_MS = 6000;
 
     (function retry(){
       let initedAny = false;
-
       wraps.forEach(w => {
         if (w._wmTripleInit) { initedAny = true; return; }
         if (isReady(w)) { initOne(w); initedAny = true; }
       });
-
       if (!initedAny && (performance.now() - t0) < HARD_STOP_MS) {
         requestAnimationFrame(retry);
       }
     })();
   }
 
-  // Run at DOM ready + load (first visit sometimes needs load)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start, { once:true });
   } else {
@@ -1921,5 +1910,3 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
   window.addEventListener('load', start, { once:true });
 })();
 </script>
-</body>
-</html>
