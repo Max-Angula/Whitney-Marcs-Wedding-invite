@@ -1789,9 +1789,9 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       // Use same tab – more reliable on mobile than window.open
       window.location.href = url;
 
-/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (beats Nicepage) */
+<script>
+/* ✅ Countdown Fix: force Days / Hours / Minutes on FIRST load (font-safe) */
 (() => {
-  // Wedding time: 18:00 Windhoek (UTC+2) = 16:00 UTC on June 26, 2026
   const TARGET_UTC_MS = Date.UTC(2026, 5, 26, 16, 0, 0);
 
   function ensureCSS() {
@@ -1889,7 +1889,7 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     setInterval(tick, 1000);
   }
 
-  function start(){
+  function startCountdown(){
     const wraps = Array.from(document.querySelectorAll('.u-countdown'));
     if (!wraps.length) return;
     const t0 = performance.now();
@@ -1906,13 +1906,23 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       }
     })();
   }
-// ✅ Countdown start after DOM + fonts ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(start, 50), { once: true });
-} else {
-  setTimeout(start, 50);
-}
-window.addEventListener('load', () => setTimeout(start, 50), { once: true });
+
+  // ✅ Font-safe: wait until Playfair Display is loaded before running countdown
+  function fontsReady(callback) {
+    if (document.fonts && document.fonts.load) {
+      Promise.race([
+        document.fonts.load('1em "Playfair Display"'),
+        new Promise(r => setTimeout(r, 1500))
+      ]).then(callback, callback);
+    } else {
+      window.addEventListener('load', callback, { once: true });
+    }
+  }
+
+  fontsReady(() => {
+    startCountdown();
+    document.documentElement.classList.remove('wm-fonts-loading');
+  });
 
 })();
 </script>
