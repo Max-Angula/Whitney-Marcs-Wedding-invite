@@ -3,6 +3,524 @@
   const rM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hasVibrate = typeof navigator !== 'undefined' && !!navigator.vibrate;
 
+document.documentElement.classList.add('wm-fonts-loading');
+(function () {
+  const done = () =>
+    document.documentElement.classList.remove('wm-fonts-loading');
+
+  if (document.fonts && document.fonts.load) {
+    // wait for Playfair Display to load before painting
+    Promise.race([
+      document.fonts.load('1em "Playfair Display"'),
+      new Promise(r => setTimeout(r, 1500))
+    ]).then(done, done);
+  } else {
+    window.addEventListener('load', done, { once: true });
+  }
+})();
+
+    /* === Wedding Countdown: Days / Hours / Minutes only — multi-widget, throttled === */
+    (() => {
+      // 18:00 Windhoek (UTC+2) => 16:00 UTC
+      const TARGET_UTC_MS = Date.UTC(2026, 5, 26, 16, 0, 0);
+
+      // Inject CSS once (scoped by .wm-triple)
+      function ensureCSS() {
+        if (document.getElementById('wm-countdown-triple-css')) return;
+        const s = document.createElement('style');
+        s.id = 'wm-countdown-triple-css';
+        s.textContent = `
+          .u-countdown.wm-triple .u-countdown-seconds,
+          .u-countdown.wm-triple .u-countdown-separator-4,
+          .u-countdown.wm-triple .u-countdown-years,
+          .u-countdown.wm-triple .u-countdown-numbers,
+          .u-countdown.wm-triple .u-countdown-separator-1,
+          .u-countdown.wm-triple .u-countdown-separator-5 { display: none !important; }
+          .u-countdown.wm-triple .u-countdown-days,
+          .u-countdown.wm-triple .u-countdown-hours,
+          .u-countdown.wm-triple .u-countdown-minutes,
+          .u-countdown.wm-triple .u-countdown-separator-2,
+          .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
+        `;
+        document.head.appendChild(s);
+      }
+
+      function neutralizeVendor(wrap) {
+        if (!wrap || wrap._wmNeutralized) return wrap;
+        wrap._wmNeutralized = true;
+        Array.from(wrap.attributes).forEach(a => {
+          if (/^data-/.test(a.name)) wrap.removeAttribute(a.name);
+        });
+        const clone = wrap.cloneNode(true);
+        wrap.replaceWith(clone);
+        return clone;
+      }
+
+      function digitsInto(counterEl, value, minLen) {
+        if (!counterEl) return;
+        const str = String(value).padStart(minLen, '0');
+        counterEl._wmUpdating = true;
+        counterEl.innerHTML = '';
+        for (const ch of str) {
+          const d = document.createElement('div');
+          d.className = 'u-countdown-number u-text-custom-color-8';
+          d.textContent = ch;
+          counterEl.appendChild(d);
+        }
+        Promise.resolve().then(() => { counterEl._wmUpdating = false; });
+      }
+
+      function compute(nowMs) {
+        const diff = Math.max(0, TARGET_UTC_MS - nowMs);
+        const total = Math.floor(diff / 1000);
+        const days    = Math.floor(total / 86400);
+        const hours   = Math.floor((total % 86400) / 3600);
+        const minutes = Math.floor((total % 3600) / 60);
+        return { days, hours, minutes };
+      }
+
+      function initOne(wrap) {
+        if (!wrap || wrap._wmTripleInit) return;
+        wrap._wmTripleInit = true;
+
+        wrap = neutralizeVendor(wrap);
+        wrap.classList.add('wm-triple');
+        ensureCSS();
+
+        const daysEl    = wrap.querySelector('.u-countdown-days .u-countdown-counter');
+        const hoursEl   = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
+        const minutesEl = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
+
+        const secBlock = wrap.querySelector('.u-countdown-seconds'); if (secBlock) secBlock.style.display = 'none';
+        const secSep   = wrap.querySelector('.u-countdown-separator-4'); if (secSep) secSep.style.display = 'none';
+
+        let moBusy = false;
+        const mo = new MutationObserver(() => {
+          if (moBusy) return;
+          moBusy = true;
+          requestAnimationFrame(() => {
+            if (!(daysEl?._wmUpdating || hoursEl?._wmUpdating || minutesEl?._wmUpdating)) tick();
+            moBusy = false;
+          });
+        });
+        mo.observe(wrap, { subtree:true, childList:true, characterData:true });
+
+        function tick() {
+          const { days, hours, minutes } = compute(Date.now());
+          digitsInto(daysEl,    days,    Math.max(2, String(days).length));
+          digitsInto(hoursEl,   hours,   2);
+          digitsInto(minutesEl, minutes, 2);
+        }
+
+        tick();
+        const id = setInterval(tick, 1000);
+        wrap._wmCountdownCleanup = () => { clearInterval(id); mo.disconnect(); };
+      }
+
+      function start() {
+        document.querySelectorAll('.u-countdown').forEach(initOne);
+      }
+
+      (document.readyState === 'loading')
+        ? document.addEventListener('DOMContentLoaded', start, { once:true })
+        : start();
+
+      window.addEventListener('wm:page-swapped', start);
+    })();
+
+    /* Top scroll progress line – idle boot + passive listeners */
+    (() => {
+      const ensureBar = () => {
+        let bar = document.getElementById('wm-progress');
+        if (!bar) {
+          bar = document.createElement('div');
+          bar.id = 'wm-progress';
+          document.body.prepend(bar);
+        }
+        return bar;
+      };
+
+      let bar, raf = null, hideTimer = null;
+      function update() {
+        raf = null;
+        const doc = document.documentElement;
+        const max = Math.max(1, doc.scrollHeight - doc.clientHeight);
+        const y   = Math.max(0, window.pageYOffset || doc.scrollTop || 0);
+        const p   = Math.min(1, y / max);
+        if (!bar) bar = ensureBar();
+        bar.style.transform = 'scaleX(' + p + ')';
+      }
+      function onScroll() {
+        if (!raf) raf = requestAnimationFrame(update);
+        document.body.classList.add('wm-scrolling');
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => document.body.classList.remove('wm-scrolling'), 300);
+      }
+
+      function boot(){
+        bar = ensureBar();
+        window.addEventListener('scroll', onScroll, { passive:true });
+        window.addEventListener('resize', onScroll, { passive:true });
+        update();
+      }
+
+      const rIC = window.requestIdleCallback || (cb => setTimeout(cb, 120));
+      (document.readyState === 'loading')
+        ? document.addEventListener('DOMContentLoaded', () => rIC(boot), { once:true })
+        : rIC(boot);
+    })();
+
+    <!-- Back to top button -->
+    <button id="wm-top" class="wm-top" aria-label="Back to top">
+      <svg viewBox="0 0 256 256" width="22" height="22" aria-hidden="true">
+        <path d="M128 16l48 48h-26l30 130H76l30-130H80l48-48zM64 224h128l-8 24H72l-8-24z" fill="currentColor"/>
+      </svg>
+    </button>
+      
+    /* Back-to-top: minimal work, no layout thrash */
+    (() => {
+      const btn = document.getElementById('wm-top');
+      if (!btn) return;
+      const prefersReduce = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const reveal = () => btn.classList.toggle('show', window.scrollY > 600);
+      window.addEventListener('scroll', reveal, { passive:true });
+      window.addEventListener('load', reveal,   { passive:true });
+      reveal();
+
+      btn.addEventListener('click', () => {
+        if (prefersReduce) window.scrollTo(0, 0);
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, { passive:true });
+    })();
+
+    /* === Global Audio Manager (lazy src, persist, one script) === */
+    (() => {
+      const AUDIO_SRC = 'https://raw.githubusercontent.com/Max-Angula/wedding-audio/main/Hot%20Chip%20%E2%80%93%20Devotion.mp3';
+      const TARGET_VOL = 0.85;
+
+      const K = {
+        approved: 'wmAudioApproved',
+        playing:  'wmAudioPlaying',
+        anchor:   'wmAudioAnchorMs',
+        lastT:    'wmAudioLastSec'
+      };
+
+      const get = (k, d=null) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+      const set = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+      function approved() { return get(K.approved) === '1'; }
+      function setApproved(v=true){ set(K.approved, v ? '1':'0'); }
+      function wantsPlaying(){ return get(K.playing, '1') === '1'; }
+      function setWantsPlaying(v){ set(K.playing, v ? '1':'0'); }
+      function getAnchor(){ const v = parseInt(get(K.anchor) || '', 10); return isFinite(v) ? v : null; }
+      function setAnchor(ms){ set(K.anchor, String(ms)); }
+      function getLastT(){ const v = parseFloat(get(K.lastT) || ''); return isFinite(v) ? v : 0; }
+      function setLastT(sec){ set(K.lastT, String(Math.max(0, sec|0))); }
+
+      function ensureAudio() {
+        let a = document.getElementById('wm-audio');
+        if (!a) {
+          a = document.createElement('audio');
+          a.id = 'wm-audio';
+          a.preload = 'none';     // 🟢 do not fetch until needed
+          a.loop = true;
+          a.autoplay = false;
+          a.playsInline = true;
+          a.crossOrigin = 'anonymous';
+          // no src yet — set on first play
+          document.body.appendChild(a);
+        }
+        return a;
+      }
+
+      function fadeTo(audio, toVol, ms=600) {
+        const from = (audio.volume ?? 0);
+        const start = performance.now();
+        const step = (t) => {
+          const k = Math.min(1, (t - start) / ms);
+          try { audio.volume = from + (toVol - from) * k; } catch {}
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
+      function computeCurrentTime(duration) {
+        const now = Date.now();
+        const anchor = getAnchor();
+        if (anchor && duration && isFinite(duration) && duration > 1) {
+          const elapsed = Math.max(0, (now - anchor) / 1000);
+          return elapsed % duration;
+        }
+        return getLastT();
+      }
+
+      async function loadSrcIfNeeded(audio){
+        if (!audio.src) {
+          audio.src = AUDIO_SRC;
+          try {
+            await audio.load?.();
+          } catch {}
+        }
+      }
+
+      async function startPlayback(audio){
+        await loadSrcIfNeeded(audio);
+        if (!approved()) {
+          setApproved(true);
+          setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
+        }
+        try {
+          audio.volume = 0.0;
+          await audio.play();
+          setWantsPlaying(true);
+          fadeTo(audio, TARGET_VOL, 900);
+        } catch {}
+      }
+
+      function wireFirstGesture(fn){
+        const once = async () => { off(); await fn(); };
+        const off  = () => ['click','touchstart','keydown','scroll'].forEach(ev => window.removeEventListener(ev, once, { passive:true }));
+        ['click','touchstart','keydown','scroll'].forEach(ev => window.addEventListener(ev, once, { passive:true, once:true }));
+      }
+
+      function upsertToggle(){
+        let btn = document.getElementById('toggle-audio');
+        if (!btn) {
+          btn = document.createElement('button');
+          btn.id = 'toggle-audio';
+          btn.className = 'wm-speaker';
+          btn.title = 'Música';
+          document.body.appendChild(btn);
+        } else {
+          btn.classList.add('wm-speaker');
+        }
+        return btn;
+      }
+
+      const SVG_ON = `
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+          <path d="M17 9a5 5 0 0 1 0 6M20 7a8 8 0 0 1 0 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        </svg>`;
+      const SVG_OFF = `
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
+          <path d="M16 9l5 5m0-5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>`;
+
+      function setIcon(btn, playing){
+        btn.innerHTML = playing ? SVG_ON : SVG_OFF;
+        btn.classList.toggle('playing', playing);
+        btn.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir música');
+      }
+
+      async function boot(){
+        const audio = ensureAudio();
+        const btn = upsertToggle();
+
+        // Keep last position persisted
+        audio.addEventListener('timeupdate', () => setLastT(audio.currentTime));
+        audio.addEventListener('seeking',    () => setLastT(audio.currentTime));
+        audio.addEventListener('play',       () => setWantsPlaying(true));
+        audio.addEventListener('pause',      () => setWantsPlaying(false));
+
+        audio.addEventListener('loadedmetadata', () => {
+          const t = computeCurrentTime(audio.duration);
+          try { audio.currentTime = t; } catch {}
+        }, { once:true });
+
+        // Initial icon
+        setIcon(btn, !audio.paused);
+
+        btn.addEventListener('click', async () => {
+          if (audio.paused) {
+            if (!getAnchor()) setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
+            await startPlayback(audio);
+          } else {
+            try { audio.pause(); } catch {}
+            setWantsPlaying(false);
+          }
+          setIcon(btn, !audio.paused);
+          try { navigator.vibrate && navigator.vibrate(8); } catch {}
+        });
+
+        // Media Session
+        if ('mediaSession' in navigator) {
+          try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title: 'Ceremony Prelude',
+              artist: 'Whitney & Marc',
+              album: 'Wedding Invitation'
+            });
+            navigator.mediaSession.setActionHandler('play',  () => startPlayback(audio));
+            navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); setWantsPlaying(false); });
+          } catch {}
+        }
+
+        // If previously approved and user wanted playing, try to resume (may still need gesture on mobile)
+        if (approved() && wantsPlaying()) {
+          try {
+            await startPlayback(audio);
+          } catch {
+            wireFirstGesture(() => startPlayback(audio));
+          }
+        } else if (!approved()) {
+          wireFirstGesture(() => startPlayback(audio));
+        }
+
+        // Safety persist
+        setInterval(() => { if (!audio.paused) setLastT(audio.currentTime); }, 1500);
+      }
+
+      (document.readyState === 'loading')
+        ? document.addEventListener('DOMContentLoaded', boot, { once:true })
+        : boot();
+
+      window.addEventListener('wm:page-swapped', () => setTimeout(boot, 30));
+    })();
+
+    <!-- /js/wm-enhance.js -->
+    ;(() => {
+      if (window.__wmEnhanceLoaded) return;
+      window.__wmEnhanceLoaded = true;
+
+      // Idle-callback with fallback (kept behavior)
+      const rIC = window.requestIdleCallback || ((cb) => setTimeout(cb, 120));
+
+      // Shorthand queryAll with optional container
+      const qSA = (sel, container = document) => Array.from(container.querySelectorAll(sel));
+
+      // expose for later blocks that call rIC/qSA
+      window.rIC = rIC;
+      window.qSA = qSA;
+
+      // ...rest of your logic here...
+    })();
+    
+      /* -------- Images: best-effort lazy & async (skip hero) -------- */
+      function enhanceImages(){
+        qSA('img:not([loading])').forEach(img => {
+          // skip if marked high priority
+          if (img.getAttribute('fetchpriority') === 'high') return;
+          img.loading = 'lazy';
+        });
+        qSA('img:not([decoding])').forEach(img => { img.decoding = 'async'; });
+      }
+
+      /* -------- Google Maps: true lazy iframe -------- */
+      function lazyMap(){
+        const frame = document.querySelector('section[id="block-1"] iframe.embed-responsive-item');
+        if (!frame) return;
+        if (!frame.dataset.src) {
+          frame.dataset.src = frame.src;
+          frame.removeAttribute('src'); // no network until near viewport
+          frame.setAttribute('title','Map – Masia La Mer');
+        }
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries){
+            if (e.isIntersecting){
+              if (!frame.src) frame.src = frame.dataset.src;
+              io.disconnect();
+              break;
+            }
+          }
+        }, { rootMargin: '600px 0px' });
+        io.observe(frame);
+      }
+
+      /* -------- Gifts modal: add focus trap (leave your logic intact) -------- */
+      function giftModalA11y(){
+        const modal = document.getElementById('wm-gift-modal');
+        const openBtn = document.getElementById('wm-gift-link');
+        if (!modal || !openBtn) return;
+
+        const dlg = modal.querySelector('.wmg-dialog');
+        const closeEls = modal.querySelectorAll('[data-wm-close], .wmg-close');
+
+        function isOpen(){ return modal.classList.contains('wmg-open'); }
+        function focusables(){
+          return qSA('a[href],button:not([disabled]),textarea,input,select,[tabindex]:not([tabindex="-1"])', dlg)
+                 .filter(el => el.offsetParent !== null);
+        }
+        function trap(e){
+          if (!isOpen() || e.key !== 'Tab') return;
+          const list = focusables(); if (!list.length) return;
+          const first = list[0], last = list[list.length-1];
+          if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+          else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+        }
+        function onOpen(){
+          modal.setAttribute('aria-hidden','false');
+          const first = focusables()[0];
+          setTimeout(()=> first && first.focus(), 30);
+          document.addEventListener('keydown', trap);
+          // Mark role/label once
+          dlg.setAttribute('role','dialog');
+          dlg.setAttribute('aria-modal','true');
+          dlg.setAttribute('aria-labelledby', dlg.querySelector('h3')?.id || 'wmg-title');
+        }
+        function onClose(){
+          modal.setAttribute('aria-hidden','true');
+          document.removeEventListener('keydown', trap);
+          setTimeout(()=> openBtn.focus(), 40);
+        }
+
+        // Hook into your existing open/close by observing class
+        const mo = new MutationObserver(() => {
+          if (isOpen()) onOpen(); else onClose();
+        });
+        mo.observe(modal, { attributes:true, attributeFilter:['class'] });
+
+        // Ensure all “close” affordances have role
+        closeEls.forEach(btn => btn.setAttribute('aria-label', btn.getAttribute('aria-label') || 'Close'));
+      }
+
+      /* -------- Reduced motion: tone down effects & audio resume -------- */
+      function reducedMotion(){
+        const m = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (!m || !m.matches) return;
+
+        // Kill ripple pulses if present
+        const css = document.createElement('style');
+        css.textContent = `
+          #toggle-audio.wm-speaker.playing::before { animation:none !important; opacity:.08; }
+          .wm-r { animation:none !important; opacity:.25 !important; }
+        `;
+        document.head.appendChild(css);
+
+        // Don’t auto-resume audio; user can still tap the button
+        try { localStorage.setItem('wmAudioPlaying','0'); } catch {}
+      }
+
+      /* -------- Minor A11Y: empty href as buttons -------- */
+      function buttonizeEmptyHrefs(){
+        qSA('a[href=""], a:not([href])').forEach(a => {
+          a.setAttribute('role','button');
+          a.setAttribute('tabindex','0');
+        });
+      }
+
+      /* -------- Boot (defer non-critical) -------- */
+      function boot(){
+        enhanceImages();
+        reducedMotion();
+        buttonizeEmptyHrefs();
+
+        // Use the rIC helper if available, otherwise fall back to setTimeout
+        const idle = (window.rIC && typeof window.rIC === 'function')
+          ? window.rIC
+          : (cb) => setTimeout(cb, 120);
+
+        idle(lazyMap);
+        idle(giftModalA11y);
+      }
+
+      (document.readyState === 'loading')
+        ? document.addEventListener('DOMContentLoaded', boot, { once:true })
+        : boot();
+
+      window.addEventListener('wm:page-swapped', () => setTimeout(boot, 30), { passive:true });
+
   /* ---------- Persistent container + UI ---------- */
   function ensurePersist() {
     let persist = document.getElementById('wm-persist');
@@ -69,6 +587,31 @@
     return { overlay, toggle, lens };
   }
   window.wmInjectUI = injectUI;
+  
+  <!-- ✅ New, simplified Add-to-Calendar handler (single source of truth, mobile-friendly) -->
+    (() => {
+      const btn = document.getElementById('wm-addtocal');
+      if (!btn) return;
+
+      const title   = 'Whitney & Marc — Wedding';
+      const start   = new Date(Date.UTC(2026, 5, 26, 16, 0, 0)); // 18:00 Windhoek (UTC+2)
+      const end     = new Date(Date.UTC(2026, 5, 26, 20, 0, 0));
+      const details = 'Masia La Mer · Cabrera de Mar\nhttps://lamerbcn.com/';
+      const loc     = 'Masia La Mer, Camí de Santa Elena, 30, Cabrera de Mar';
+
+      const dt = (u) => u.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
+      const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent(title)
+        + '&dates=' + dt(start) + '/' + dt(end)
+        + '&details=' + encodeURIComponent(details)
+        + '&location=' + encodeURIComponent(loc);
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Use same tab – more reliable on mobile than window.open
+        window.location.href = url;
+      });
+    })();
 
 /* ---------- Audio singleton + seamless resume ---------- */
 function ensureAudio() {
@@ -987,6 +1530,23 @@ function ensureAudio() {
   }, { passive:true, capture: true });
 })();
 
+    (function(){
+      let layer = document.querySelector('.wm-ripple');
+      if(!layer){
+        layer = document.createElement('div');
+        layer.className='wm-ripple';
+        document.body.appendChild(layer);
+      }
+      document.addEventListener('click', e => {
+        const r = document.createElement('i');
+        r.className='wm-r';
+        r.style.left = e.clientX+'px';
+        r.style.top  = e.clientY+'px';
+        layer.appendChild(r);
+        setTimeout(()=>r.remove(), 650);
+      }, {passive:true});
+    })();
+   
 /* === “Scented scroll” silk sheen — add class="silk-heading" to titles === */
 (() => {
   function injectCSS(){
