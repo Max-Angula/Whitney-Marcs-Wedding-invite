@@ -9,7 +9,10 @@
 
     <link rel="stylesheet" href="nicepage.css" media="screen">
     <link rel="stylesheet" href="2-Open-Envelop.css" media="screen">
-
+    
+    <!-- ✅ WM shared styles -->
+    <link rel="stylesheet" href="css/wm-pack.css">
+   
     <!-- Speed up Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -218,7 +221,7 @@
             class="u-align-center u-custom-font u-font-playfair-display u-text u-text-default-lg u-text-default-md u-text-default-sm u-text-default-xl u-text-4"
             data-animation-out="0"
           >
-            Català&nbsp;
+            Catalàn&nbsp;
           </h3>
           <img
             class="u-image u-image-contain u-image-default u-preserve-proportions u-image-3"
@@ -235,32 +238,7 @@
     <!-- Optional: Nicepage SPA bundle -->
     <script defer src="js/wm-pack.js"></script>
 
-    <!-- Speaker button look (single, de-duped) -->
-    <style>
-      #toggle-audio.wm-speaker{
-        position:fixed; right:16px; bottom:16px; z-index:99999;
-        width:54px; height:54px; border:none; border-radius:50%;
-        display:grid; place-items:center; padding:0;
-        background:rgba(255,255,255,.88);
-        box-shadow:0 8px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.06);
-        backdrop-filter:blur(6px);
-      }
-      #toggle-audio.wm-speaker svg{
-        width:22px; height:22px; display:block;
-      }
-      #toggle-audio.wm-speaker.playing::before{
-        content:""; position:absolute; inset:-10px; border-radius:999px;
-        background:radial-gradient(circle, rgba(62,47,28,.18) 0%, rgba(62,47,28,0) 60%);
-        animation:wmRing 2.6s ease-out infinite;
-      }
-      @keyframes wmRing{
-        0%{opacity:.22; transform:scale(.9)}
-        70%{opacity:.06}
-        100%{opacity:0; transform:scale(1.25)}
-      }
-    </style>
-
-    <!-- (Optional) Footer styling, if/when you add the footer markup -->
+        <!-- (Optional) Footer styling, if/when you add the footer markup -->
     <style>
       .wm-footer--bar{
         --accent: 96,116,87;       /* #607457 */
