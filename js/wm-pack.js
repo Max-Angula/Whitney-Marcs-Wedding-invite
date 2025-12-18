@@ -363,15 +363,141 @@ function initCountdown(root = document) {
     update();
   }
 
-  // =========================================================
-  // 3) AUDIO MANAGER (UNCHANGED from your version)
-  // =========================================================
-  function initAudioOnce() {
-    if (window.__wmAudioInit) return;
-    window.__wmAudioInit = true;
+// =========================================================
+// 3) AUDIO MANAGER (speaker button + play/pause)
+// =========================================================
+function initAudioOnce() {
+  if (window.__wmAudioInit) return;
+  window.__wmAudioInit = true;
 
-    // ... keep your audio manager code
+  const persist = ensurePersist();
+
+  injectStyleOnce('wm-audio-css', `
+    #wm-audio-btn{
+      position:fixed;
+      left:14px;
+      bottom:18px;
+      z-index:99998;
+      width:46px;
+      height:46px;
+      border-radius:999px;
+      border:none;
+      display:grid;
+      place-items:center;
+      background:rgba(0,0,0,.62);
+      color:#fff;
+      box-shadow:0 10px 26px rgba(0,0,0,.22);
+      backdrop-filter:blur(6px);
+      cursor:pointer;
+    }
+    #wm-audio-btn[aria-pressed="true"]{ opacity:1; }
+    #wm-audio-btn[aria-pressed="false"]{ opacity:.72; }
+    #wm-audio-btn svg{ width:22px; height:22px; }
+  `);
+
+  // Create/Reuse audio element
+  let audio = document.getElementById('wm-audio-el');
+  if (!audio) {
+    audio = document.createElement('audio');
+    audio.id = 'wm-audio-el';
+    audio.src = AUDIO_SRC;
+    audio.preload = 'auto';
+    audio.loop = true;
+    audio.playsInline = true;
+    persist.appendChild(audio);
   }
+
+  // Create/Reuse speaker button
+  let btn = document.getElementById('wm-audio-btn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'wm-audio-btn';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Music');
+    btn.setAttribute('aria-pressed', 'false');
+    btn.innerHTML = `
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <path fill="currentColor"
+          d="M48 96v64h40l56 48V48L88 96H48zm140.9 32c0 21.2-9.2 40.2-23.8 52.8a8 8 0 0 0 10.3 12.3C193.7 178.7 204.9 154.7 204.9 128s-11.2-50.7-29.5-65.1a8 8 0 1 0-10.3 12.3c14.6 12.6 23.8 31.6 23.8 52.8z"/>
+        <path fill="currentColor"
+          d="M168.6 26.3a8 8 0 0 0-9.2 13.4C182.8 56.2 196.9 90.6 196.9 128s-14.1 71.8-37.5 88.3a8 8 0 0 0 9.2 13.4C195.7 210.9 212.9 171.4 212.9 128s-17.2-82.9-44.3-101.7z"/>
+      </svg>
+    `;
+    document.body.appendChild(btn);
+  }
+
+  // Helpers
+  const setBtn = (playing) => {
+    btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+  };
+
+  const saveAnchor = () => {
+    try {
+      setAnchorMs(Date.now());
+      setLastSec(audio.currentTime || 0);
+    } catch {}
+  };
+
+  const restoreTime = () => {
+    try {
+      const anchor = getAnchorMs();
+      const last = getLastSec();
+      if (anchor != null && last > 0) {
+        const elapsed = (Date.now() - anchor) / 1000;
+        audio.currentTime = Math.max(0, last + elapsed);
+      }
+    } catch {}
+  };
+
+  async function playNow() {
+    restoreTime();
+    audio.volume = AUDIO_TARGET_VOL;
+    try {
+      await audio.play();
+      setBtn(true);
+      setWantsPlaying(true);
+    } catch {
+      setBtn(false);
+    }
+  }
+
+  function pauseNow() {
+    try { audio.pause(); } catch {}
+    saveAnchor();
+    setBtn(false);
+    setWantsPlaying(false);
+  }
+
+  // Click speaker toggles play/pause (this counts as a user gesture)
+  btn.addEventListener('click', async () => {
+    setApprovedAudio(true);
+    if (audio.paused) await playNow();
+    else pauseNow();
+  }, { passive: true });
+
+  // Keep progress saved
+  audio.addEventListener('timeupdate', () => {
+    // save occasionally (cheap)
+    if ((audio.currentTime | 0) % 10 === 0) saveAnchor();
+  }, { passive: true });
+
+  window.addEventListener('pagehide', saveAnchor, { passive: true });
+
+  // Auto-start ONLY if user previously approved audio
+  if (approvedAudio() && wantsPlaying()) {
+    playNow();
+  } else {
+    setBtn(false);
+    // Optional: start on first tap anywhere if they want it “just works”
+    const unlock = async () => {
+      if (!approvedAudio() || !wantsPlaying()) return;
+      await playNow();
+    };
+    document.addEventListener('click', unlock, { passive: true, once: true, capture: true });
+    document.addEventListener('touchstart', unlock, { passive: true, once: true, capture: true });
+  }
+}
+
 
   // =========================================================
   // 4) AR (UNCHANGED from your version)
