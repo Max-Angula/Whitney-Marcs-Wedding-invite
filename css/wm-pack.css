@@ -15,6 +15,9 @@
   pointer-events: none; /* JS buttons inside must set pointer-events:auto */
 }
 
+/* ---------- Speaker Icon ---------- */
+ #wm-audio-btn { color: #C7A740; } 
+
 /* ---------- Scroll Bar Top ---------- */
 #wm-progress { color: #C7A740; } /* sets the bar color */
 #wm-top.wm-top { color: #C7A740; } /* sets the arrow icon color */
