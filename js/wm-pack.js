@@ -105,44 +105,28 @@
 // 1) COUNTDOWN (CSS-ONLY: keep Nicepage styling)
 // Show only Days / Hours / Minutes
 // =========================================================
-function initCountdown(root = document) {
-  injectStyleOnce('wm-countdown-css', `
-    /* Hide the units we don't want */
-    .u-countdown.wm-triple .u-countdown-years,
-    .u-countdown.wm-triple .u-countdown-seconds,
-    .u-countdown.wm-triple .u-countdown-numbers,
-    .u-countdown.wm-triple .u-countdown-separator-1,
-    .u-countdown.wm-triple .u-countdown-separator-4,
-    .u-countdown.wm-triple .u-countdown-separator-5 {
-      display: none !important;
-    }
+  function initCountdown(root = document) {
+    injectStyleOnce('wm-countdown-css', `
+      /* Hide everything by default inside wm-triple */
+      .u-countdown.wm-triple .u-countdown-item,
+      .u-countdown.wm-triple .u-countdown-separator { display: none !important; }
 
-    /* Force show the units we DO want (even if Nicepage added u-hidden) */
-    .u-countdown.wm-triple .u-countdown-days,
-    .u-countdown.wm-triple .u-countdown-hours,
-    .u-countdown.wm-triple .u-countdown-minutes,
-    .u-countdown.wm-triple .u-countdown-separator-2,
-    .u-countdown.wm-triple .u-countdown-separator-3 {
-      display: inline-flex !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-    }
-  `);
+      /* Show only Days / Hours / Minutes + the right separators */
+      .u-countdown.wm-triple .u-countdown-days,
+      .u-countdown.wm-triple .u-countdown-hours,
+      .u-countdown.wm-triple .u-countdown-minutes,
+      .u-countdown.wm-triple .u-countdown-separator-2,
+      .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
+    `);
 
-  $$('.u-countdown', root).forEach((wrap) => {
-    if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
-    wrap.dataset.wmCountdownInit = '1';
-    wrap.classList.add('wm-triple');
+    $$('.u-countdown', root).forEach((wrap) => {
+      if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
+      wrap.dataset.wmCountdownInit = '1';
 
-    // Remove Nicepage "u-hidden" from the bits we want visible
-    wrap.querySelector('.u-countdown-days')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-hours')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-minutes')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-2')?.classList.remove('u-hidden');
-    wrap.querySelector('.u-countdown-separator-3')?.classList.remove('u-hidden');
-  });
-}
-
+      // purely styling — Nicepage keeps updating values
+      wrap.classList.add('wm-triple');
+    });
+  }
   // =========================================================
   // RSVP smooth scroll (bind once per DOM instance)
   // =========================================================
