@@ -15,6 +15,11 @@
   pointer-events: none; /* JS buttons inside must set pointer-events:auto */
 }
 
+
+/* ---------- Scroll Bar Top ---------- */
+#wm-progress { color: #C7A740; } /* sets the bar color */
+#wm-top.wm-top { color: #C7A740; } /* sets the arrow icon color */
+
 /* ---------- Gift modal ---------- */
 #wm-gift-modal { position: fixed; inset: 0; display: none; z-index: 99999; }
 #wm-gift-modal.wmg-open { display: block; }
