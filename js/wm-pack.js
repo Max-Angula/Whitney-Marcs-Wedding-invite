@@ -742,9 +742,10 @@ function initAudioOnce() {
     initFontsLoadingClassOnce();
     initProgressAndTopOnce();
 
+    initAudioOnce();
+
     // Re-enable these after you paste your full sections back in:
-    // initAudioOnce();
-    // initAROnce();
+    initAROnce();
     // initSPASwapOnce();
 
     initPage(document);
