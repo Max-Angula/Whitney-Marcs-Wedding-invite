@@ -6,6 +6,18 @@
   --wm-green: #486b49;
 }
 
+/* Countdown font + color (Nicepage) */
+.u-countdown-1 .u-countdown-counter,
+.u-countdown-1 .u-countdown-label,
+.u-countdown-1 .u-countdown-separator {
+  font-family: "Playfair Display", serif !important;
+  color: var(--custom-color-8) !important; /* uses your Nicepage custom color */
+}
+
+.u-countdown-1 .u-countdown-item {
+  border-color: var(--custom-color-10) !important; /* or custom-color-8 if you prefer */
+}
+
 /* ---------- Persist container ---------- */
 #wm-persist{
   position: fixed;
