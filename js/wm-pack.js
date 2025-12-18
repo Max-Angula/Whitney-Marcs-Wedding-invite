@@ -101,31 +101,28 @@
     }
   }
 
-  // =========================================================
-  // 1) COUNTDOWN (CSS-ONLY: keep Nicepage timer, avoid flicker)
-  // Days / Hours / Minutes only (hide seconds + other units)
-  // =========================================================
-  function initCountdown(root = document) {
-    injectStyleOnce('wm-countdown-css', `
-      /* Hide everything by default inside wm-triple */
-      .u-countdown.wm-triple .u-countdown-item,
-      .u-countdown.wm-triple .u-countdown-separator { display: none !important; }
+// =========================================================
+// 1) COUNTDOWN (CSS-ONLY: keep Nicepage styling)
+// Show only Days / Hours / Minutes
+// =========================================================
+function initCountdown(root = document) {
+  injectStyleOnce('wm-countdown-css', `
+    /* Only HIDE what we don't want (leave the rest to Nicepage) */
+    .u-countdown.wm-triple .u-countdown-years,
+    .u-countdown.wm-triple .u-countdown-seconds,
+    .u-countdown.wm-triple .u-countdown-numbers,
+    .u-countdown.wm-triple .u-countdown-separator-1,
+    .u-countdown.wm-triple .u-countdown-separator-4,
+    .u-countdown.wm-triple .u-countdown-separator-5 {
+      display: none !important;
+    }
+  `);
 
-      /* Show only Days / Hours / Minutes + the right separators */
-      .u-countdown.wm-triple .u-countdown-days,
-      .u-countdown.wm-triple .u-countdown-hours,
-      .u-countdown.wm-triple .u-countdown-minutes,
-      .u-countdown.wm-triple .u-countdown-separator-2,
-      .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
-    `);
-
-    $$('.u-countdown', root).forEach((wrap) => {
-      if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
-      wrap.dataset.wmCountdownInit = '1';
-
-      // purely styling — Nicepage keeps updating values
-      wrap.classList.add('wm-triple');
-    });
+  $$('.u-countdown', root).forEach((wrap) => {
+    if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
+    wrap.dataset.wmCountdownInit = '1';
+    wrap.classList.add('wm-triple');
+  });
   }
 
   // =========================================================
