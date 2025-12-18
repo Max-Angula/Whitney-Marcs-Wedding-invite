@@ -433,7 +433,7 @@ function initAudioOnce() {
       display:grid;
       place-items:center;
       background:rgba(0,0,0,.62);
-      color:#fff;
+      color:#C7A740;
       box-shadow:0 10px 26px rgba(0,0,0,.22);
       backdrop-filter:blur(6px);
       cursor:pointer;
