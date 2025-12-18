@@ -196,7 +196,6 @@
     const modal = $('#wm-gift-modal', root);
     if (!modal) return;
 
-    // open trigger can vary per language/page
     const openBtn = root.querySelector('#wm-gift-link, #wm-gift-link-cat, #wm-gift-link-es, [data-wm-gift]');
     if (!openBtn) return;
 
@@ -408,9 +407,7 @@
     if (window.__wmAudioInit) return;
     window.__wmAudioInit = true;
 
-    // ... (keep your audio manager code exactly as-is)
-    // I’m not repeating it here to keep this message readable.
-    // If you want, paste back your audio section and I’ll reinsert it into this cleaned file.
+    // ... keep your audio manager code
   }
 
   // =========================================================
@@ -442,7 +439,6 @@
       if (!img.getAttribute('decoding')) img.decoding = 'async';
     });
 
-    // Map iframe: lazy load
     if (!window.__wmMapLazyBound) {
       window.__wmMapLazyBound = true;
 
@@ -493,8 +489,161 @@
     initCountdown(root);
     initRsvpScroll(root);
     initGiftModal(root);
-    initAddToCalendar(root);
+    initAddToCalendar(root); // ✅ added
     initEnhancers(root);
+  }
+
+  // =========================================================
+  // 8) ADD TO CALENDAR (ICS + GOOGLE) — tiny handler
+  // =========================================================
+  function initAddToCalendar(root = document) {
+    const btn = root.querySelector('#wm-addtocal');
+    if (!btn || btn.dataset.wmCalInit === '1') return;
+    btn.dataset.wmCalInit = '1';
+
+    const title = 'Casament Whitney & Marc';
+    const description = 'Ens casem! 🥂';
+    const location = 'Masia La Mer, Camí de Santa Elena, 30, 08349 Cabrera de Mar, Barcelona, Spain';
+
+    // 18:00 Spain (CEST, UTC+2) = 16:00 UTC
+    const startUtc = new Date(Date.UTC(2026, 5, 26, 16, 0, 0));
+    const endUtc   = new Date(Date.UTC(2026, 5, 26, 21, 30, 0)); // 23:30 Spain = 21:30 UTC
+
+    const pad2 = (n) => String(n).padStart(2, '0');
+    const toICSDateUTC = (d) =>
+      d.getUTCFullYear() +
+      pad2(d.getUTCMonth() + 1) +
+      pad2(d.getUTCDate()) + 'T' +
+      pad2(d.getUTCHours()) +
+      pad2(d.getUTCMinutes()) +
+      pad2(d.getUTCSeconds()) + 'Z';
+
+    const icsEscape = (s) =>
+      String(s || '')
+        .replace(/\\/g, '\\\\')
+        .replace(/\n/g, '\\n')
+        .replace(/,/g, '\\,')
+        .replace(/;/g, '\\;');
+
+    function makeICS() {
+      const dtstamp = toICSDateUTC(new Date());
+      const dtstart = toICSDateUTC(startUtc);
+      const dtend   = toICSDateUTC(endUtc);
+      const uid     = 'wm-wedding-' + dtstart + '@wm-invite';
+
+      const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//WhitneyMarc//WeddingInvite//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${dtstamp}`,
+        `DTSTART:${dtstart}`,
+        `DTEND:${dtend}`,
+        `SUMMARY:${icsEscape(title)}`,
+        `DESCRIPTION:${icsEscape(description)}`,
+        `LOCATION:${icsEscape(location)}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ];
+
+      return lines.join('\r\n');
+    }
+
+    function googleLink() {
+      const fmt = (d) =>
+        d.getUTCFullYear() +
+        pad2(d.getUTCMonth() + 1) +
+        pad2(d.getUTCDate()) + 'T' +
+        pad2(d.getUTCHours()) +
+        pad2(d.getUTCMinutes()) +
+        pad2(d.getUTCSeconds()) + 'Z';
+
+      const dates = `${fmt(startUtc)}/${fmt(endUtc)}`;
+
+      const url = new URL('https://calendar.google.com/calendar/render');
+      url.searchParams.set('action', 'TEMPLATE');
+      url.searchParams.set('text', title);
+      url.searchParams.set('details', description);
+      url.searchParams.set('location', location);
+      url.searchParams.set('dates', dates);
+      return url.toString();
+    }
+
+    function openChooser() {
+      const old = document.getElementById('wm-cal-pop');
+      if (old) old.remove();
+
+      const pop = document.createElement('div');
+      pop.id = 'wm-cal-pop';
+      pop.style.position = 'fixed';
+      pop.style.inset = '0';
+      pop.style.zIndex = '999999';
+      pop.style.background = 'rgba(0,0,0,.35)';
+      pop.style.display = 'grid';
+      pop.style.placeItems = 'center';
+      pop.style.padding = '16px';
+
+      const card = document.createElement('div');
+      card.style.background = '#fff';
+      card.style.borderRadius = '14px';
+      card.style.maxWidth = '360px';
+      card.style.width = '100%';
+      card.style.boxShadow = '0 24px 60px rgba(0,0,0,.25)';
+      card.style.padding = '14px';
+
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+          <div style="font-weight:700;">Afegir al calendari</div>
+          <button type="button" id="wm-cal-close" style="border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer;">×</button>
+        </div>
+        <div style="margin-top:10px; display:grid; gap:10px;">
+          <button type="button" id="wm-cal-ics" style="padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.12); cursor:pointer; font-weight:600;">
+            Descarregar .ics (Apple/Outlook)
+          </button>
+          <a id="wm-cal-g" href="#" target="_blank" rel="noopener"
+             style="text-decoration:none; text-align:center; padding:10px 12px; border-radius:12px; background:#111; color:#fff; font-weight:700;">
+            Obrir a Google Calendar
+          </a>
+        </div>
+        <div style="margin-top:10px; font-size:12px; opacity:.7;">
+          Hora local: 26/06/2026 · 18:00 (Barcelona)
+        </div>
+      `;
+
+      pop.appendChild(card);
+      document.body.appendChild(pop);
+
+      const close = () => pop.remove();
+      pop.addEventListener('click', (e) => { if (e.target === pop) close(); }, { passive: true });
+      card.querySelector('#wm-cal-close')?.addEventListener('click', close, { passive: true });
+
+      const g = card.querySelector('#wm-cal-g');
+      if (g) g.href = googleLink();
+
+      card.querySelector('#wm-cal-ics')?.addEventListener('click', () => {
+        try {
+          const blob = new Blob([makeICS()], { type: 'text/calendar;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'whitney-marc-wedding.ics';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 1500);
+        } catch {}
+        close();
+      }, { passive: true });
+    }
+
+    btn.setAttribute('href', '#');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openChooser();
+    }, { passive: false });
   }
 
   // =========================================================
@@ -521,169 +670,5 @@
   window.addEventListener('wm:page-swapped', () => {
     setTimeout(() => initPage(document), 30);
   }, { passive: true });
-
-  // =========================================================
-// 8) ADD TO CALENDAR (ICS + GOOGLE) — tiny handler
-// =========================================================
-function initAddToCalendar(root = document) {
-  const btn = root.querySelector('#wm-addtocal');
-  if (!btn || btn.dataset.wmCalInit === '1') return;
-  btn.dataset.wmCalInit = '1';
-
-  // --- Event details (edit text freely) ---
-  const title = 'Casament Whitney & Marc';
-  const description = 'Ens casem! 🥂';
-  const location = 'Masia La Mer, Camí de Santa Elena, 30, 08349 Cabrera de Mar, Barcelona, Spain';
-
-  // --- Local Spain time: 2026-06-26 18:00 → 23:30 ---
-  // We store as UTC for ICS/Google to avoid timezone weirdness.
-  // 18:00 in Spain (CEST, UTC+2) = 16:00 UTC
-  const startUtc = new Date(Date.UTC(2026, 5, 26, 16, 0, 0));
-  const endUtc   = new Date(Date.UTC(2026, 5, 26, 21, 30, 0)); // 23:30 Spain = 21:30 UTC
-
-  const pad2 = (n) => String(n).padStart(2, '0');
-  const toICSDateUTC = (d) =>
-    d.getUTCFullYear() +
-    pad2(d.getUTCMonth() + 1) +
-    pad2(d.getUTCDate()) + 'T' +
-    pad2(d.getUTCHours()) +
-    pad2(d.getUTCMinutes()) +
-    pad2(d.getUTCSeconds()) + 'Z';
-
-  const icsEscape = (s) =>
-    String(s || '')
-      .replace(/\\/g, '\\\\')
-      .replace(/\n/g, '\\n')
-      .replace(/,/g, '\\,')
-      .replace(/;/g, '\\;');
-
-  // Build ICS content
-  function makeICS() {
-    const dtstamp = toICSDateUTC(new Date());
-    const dtstart = toICSDateUTC(startUtc);
-    const dtend   = toICSDateUTC(endUtc);
-    const uid     = 'wm-wedding-' + dtstart + '@wm-invite';
-
-    const lines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//WhitneyMarc//WeddingInvite//EN',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      'BEGIN:VEVENT',
-      `UID:${uid}`,
-      `DTSTAMP:${dtstamp}`,
-      `DTSTART:${dtstart}`,
-      `DTEND:${dtend}`,
-      `SUMMARY:${icsEscape(title)}`,
-      `DESCRIPTION:${icsEscape(description)}`,
-      `LOCATION:${icsEscape(location)}`,
-      'END:VEVENT',
-      'END:VCALENDAR'
-    ];
-
-    // RFC5545 wants CRLF
-    return lines.join('\r\n');
-  }
-
-  // Google Calendar link (UTC timestamps)
-  function googleLink() {
-    const fmt = (d) =>
-      d.getUTCFullYear() +
-      pad2(d.getUTCMonth() + 1) +
-      pad2(d.getUTCDate()) + 'T' +
-      pad2(d.getUTCHours()) +
-      pad2(d.getUTCMinutes()) +
-      pad2(d.getUTCSeconds()) + 'Z';
-
-    const dates = `${fmt(startUtc)}/${fmt(endUtc)}`;
-
-    const url = new URL('https://calendar.google.com/calendar/render');
-    url.searchParams.set('action', 'TEMPLATE');
-    url.searchParams.set('text', title);
-    url.searchParams.set('details', description);
-    url.searchParams.set('location', location);
-    url.searchParams.set('dates', dates);
-    return url.toString();
-  }
-
-  // Tiny chooser UI (no CSS file needed)
-  function openChooser() {
-    // Remove existing
-    const old = document.getElementById('wm-cal-pop');
-    if (old) old.remove();
-
-    const pop = document.createElement('div');
-    pop.id = 'wm-cal-pop';
-    pop.style.position = 'fixed';
-    pop.style.inset = '0';
-    pop.style.zIndex = '999999';
-    pop.style.background = 'rgba(0,0,0,.35)';
-    pop.style.display = 'grid';
-    pop.style.placeItems = 'center';
-    pop.style.padding = '16px';
-
-    const card = document.createElement('div');
-    card.style.background = '#fff';
-    card.style.borderRadius = '14px';
-    card.style.maxWidth = '360px';
-    card.style.width = '100%';
-    card.style.boxShadow = '0 24px 60px rgba(0,0,0,.25)';
-    card.style.padding = '14px';
-
-    card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
-        <div style="font-weight:700;">Afegir al calendari</div>
-        <button type="button" id="wm-cal-close" style="border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer;">×</button>
-      </div>
-      <div style="margin-top:10px; display:grid; gap:10px;">
-        <button type="button" id="wm-cal-ics" style="padding:10px 12px; border-radius:12px; border:1px solid rgba(0,0,0,.12); cursor:pointer; font-weight:600;">
-          Descarregar .ics (Apple/Outlook)
-        </button>
-        <a id="wm-cal-g" href="#" target="_blank" rel="noopener"
-           style="text-decoration:none; text-align:center; padding:10px 12px; border-radius:12px; background:#111; color:#fff; font-weight:700;">
-          Obrir a Google Calendar
-        </a>
-      </div>
-      <div style="margin-top:10px; font-size:12px; opacity:.7;">
-        Hora local: 26/06/2026 · 18:00 (Barcelona)
-      </div>
-    `;
-
-    pop.appendChild(card);
-    document.body.appendChild(pop);
-
-    const close = () => pop.remove();
-    pop.addEventListener('click', (e) => { if (e.target === pop) close(); }, { passive: true });
-    card.querySelector('#wm-cal-close')?.addEventListener('click', close, { passive: true });
-
-    // Google link
-    const g = card.querySelector('#wm-cal-g');
-    if (g) g.href = googleLink();
-
-    // ICS download
-    card.querySelector('#wm-cal-ics')?.addEventListener('click', () => {
-      try {
-        const blob = new Blob([makeICS()], { type: 'text/calendar;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'whitney-marc-wedding.ics';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1500);
-      } catch {}
-      close();
-    }, { passive: true });
-  }
-
-  // Bind
-  btn.setAttribute('href', '#');
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    openChooser();
-  }, { passive: false });
-}
 
 })();
