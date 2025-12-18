@@ -170,7 +170,160 @@
       WM_CLEANUPS.push(() => clearInterval(id));
     });
   }
+<!-- ===== Smooth scroll + auto-focus (RSVP) ===== -->
+ 
+(function () {
+  function bindRsvpScroll() {
+    const btn  = document.getElementById('rsvp-btn');
+    const form = document.getElementById('rsvp-form');
+    if (!btn || !form) return; // fail quietly if either is missing
 
+    btn.addEventListener('click', function (e) {
+      e.preventDefault(); // stop the default jump
+
+      // Smooth scroll to the form
+      try {
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch {
+        // Fallback if smooth option isn't supported
+        form.scrollIntoView(true);
+      }
+
+      // Focus the first editable field after a short delay
+      setTimeout(() => {
+        const firstField = form.querySelector('input, select, textarea');
+        if (!firstField) return;
+        try {
+          firstField.focus({ preventScroll: true });
+        } catch {
+          firstField.focus();
+        }
+      }, 450);
+
+      // Keep the URL hash in sync (optional)
+      try {
+        history.pushState(null, '', '#rsvp-form');
+      } catch {}
+    }, { passive: false });
+  }
+
+  // Make sure it runs after the DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindRsvpScroll, { once: true });
+  } else {
+    bindRsvpScroll();
+  }
+})();
+
+/* Modal + copiar + QR EPC/SEPA (carga bajo demanda) — SINGLE controller */
+(function () {
+  // Supports multiple possible triggers
+  const openBtn = document.querySelector('#wm-gift-link, #wm-gift-link-cat, #wm-gift-link-es, [data-wm-gift]');
+  const modal   = document.getElementById('wm-gift-modal');
+  if (!openBtn || !modal) return;
+
+  function open(){
+    modal.classList.add('wmg-open');
+    modal.setAttribute('aria-hidden','false');
+    document.documentElement.style.overflow='hidden';
+  }
+  function close(){
+    modal.classList.remove('wmg-open');
+    modal.setAttribute('aria-hidden','true');
+    document.documentElement.style.overflow='';
+  }
+
+  // EPC payload (importe omitido → el ordenante lo elige)
+  function buildEpc({bic, name, iban, remittance}){
+    const sanitize = s => String(s || '').replace(/\n|\r/g,' ').slice(0,70);
+    return [
+      'BCD','001','1','SCT',
+      sanitize(bic),
+      sanitize(name),
+      sanitize(iban).replace(/\s+/g,''),
+      '','',
+      sanitize(remittance || '')
+    ].join('\n');
+  }
+
+  function makeQR(){
+    const name = document.getElementById('wmg-name')?.textContent.trim() || '';
+    const iban = document.getElementById('wmg-iban')?.textContent.trim() || '';
+    const bic  = document.getElementById('wmg-swift')?.textContent.trim() || '';
+    const ref  = document.getElementById('wmg-ref')?.textContent.trim() || '';
+    const payload = buildEpc({bic, name, iban, remittance: ref});
+
+    const box = document.getElementById('wmg-qr');
+    if (!box || !window.QRCode) return;
+
+    box.innerHTML = '';
+    new QRCode(box, { text: payload, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+  }
+
+  async function ensureQRLib(){
+    if (window.QRCode) return;
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload = res;
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  openBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    open();
+    try { await ensureQRLib(); makeQR(); } catch {}
+  }, { passive: false });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.matches('[data-wm-close], .wmg-backdrop')) close();
+  }, { passive: true });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  }, { passive: true });
+
+  // Copy buttons
+  modal.querySelectorAll('.wmg-copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const sel = btn.getAttribute('data-copy');
+      const el  = sel && modal.querySelector(sel);
+      const txt = el ? el.textContent.trim() : '';
+      if (!txt) return;
+      try {
+        await navigator.clipboard.writeText(txt);
+        const old = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        setTimeout(() => btn.textContent = old, 900);
+      } catch {}
+    }, { passive: true });
+  });
+
+  // Download .txt
+  const dl = document.getElementById('wmg-download');
+  if (dl){
+    dl.addEventListener('click', () => {
+      const parts = [
+        'Titulares de la cuenta: ' + (document.getElementById('wmg-name')?.textContent || ''),
+        'IBAN: ' + (document.getElementById('wmg-iban')?.textContent || ''),
+        'BIC / SWIFT: ' + (document.getElementById('wmg-swift')?.textContent || ''),
+        'Banco: ' + (document.getElementById('wmg-bank')?.textContent || ''),
+        'Concepto: ' + (document.getElementById('wmg-ref')?.textContent || '')
+      ];
+      const blob = new Blob([parts.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'detalles-regalo.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }, { passive: true });
+  }
+})();
   // =========================================================
   // 2) TOP SCROLL PROGRESS LINE + BACK TO TOP (ONE IMPLEMENTATION)
   // =========================================================
