@@ -101,91 +101,76 @@
     }
   }
 
-// =========================================================
-// 1) COUNTDOWN (WM drives numbers; reads Nicepage target date)
-// Days / Hours / Minutes only
-// =========================================================
-function initCountdown(root = document) {
-  injectStyleOnce('wm-countdown-css', `
-    /* Hide everything by default inside wm-triple */
-    .u-countdown.wm-triple .u-countdown-item,
-    .u-countdown.wm-triple .u-countdown-separator { display:none !important; }
+  // =========================================================
+  // 1) COUNTDOWN (Nicepage look, WM updates numbers = no 00:00:00)
+  // Days / Hours / Minutes only
+  // =========================================================
+  function initCountdown(root = document) {
+    injectStyleOnce('wm-countdown-css', `
+      /* Hide units we don't want */
+      .u-countdown.wm-triple .u-countdown-years,
+      .u-countdown.wm-triple .u-countdown-seconds,
+      .u-countdown.wm-triple .u-countdown-numbers,
+      .u-countdown.wm-triple .u-countdown-separator-1,
+      .u-countdown.wm-triple .u-countdown-separator-4,
+      .u-countdown.wm-triple .u-countdown-separator-5 {
+        display: none !important;
+      }
+    `);
 
-    /* Show only Days / Hours / Minutes + the right separators */
-    .u-countdown.wm-triple .u-countdown-days,
-    .u-countdown.wm-triple .u-countdown-hours,
-    .u-countdown.wm-triple .u-countdown-minutes,
-    .u-countdown.wm-triple .u-countdown-separator-2,
-    .u-countdown.wm-triple .u-countdown-separator-3 { display:inline-flex !important; }
-  `);
-
-  const pad2 = (n) => String(n).padStart(2, '0');
-
-  const toUTCStamp = (ms) => {
-    const d = new Date(ms);
-    return (
-      d.getUTCFullYear() + '-' +
-      pad2(d.getUTCMonth() + 1) + '-' +
-      pad2(d.getUTCDate()) + ' ' +
-      pad2(d.getUTCHours()) + ':' +
-      pad2(d.getUTCMinutes()) + ':' +
-      pad2(d.getUTCSeconds()) + 'Z'
-    );
-  };
-
-  function renderDigits(counterEl, value, minLen) {
-    if (!counterEl) return;
-    const str = String(value).padStart(minLen, '0');
-    counterEl.textContent = '';
-    for (const ch of str) {
-      const d = document.createElement('div');
-      // keep Nicepage styling hooks
-      d.className = 'u-countdown-number u-text-custom-color-8';
-      d.textContent = ch;
-      counterEl.appendChild(d);
-    }
-  }
-
-  $$('.u-countdown', root).forEach((wrap) => {
-    if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
-    wrap.dataset.wmCountdownInit = '1';
-    wrap.classList.add('wm-triple');
-
-    // Prefer the Nicepage target date (so it always matches the HTML page)
-    const raw = wrap.getAttribute('data-target-date') || '';
-    const parsed = Date.parse(raw);
-    const targetMs = Number.isFinite(parsed) ? parsed : WEDDING_TARGET_UTC_MS;
-
-    // If this still shows 0s, it means targetMs <= now (or device clock wrong)
-    // We keep going anyway.
-
-    const tick = () => {
-      // re-query every tick (handles Nicepage DOM rebuilds)
-      const daysEl = wrap.querySelector('.u-countdown-days .u-countdown-counter');
-      const hrsEl  = wrap.querySelector('.u-countdown-hours .u-countdown-counter');
-      const minEl  = wrap.querySelector('.u-countdown-minutes .u-countdown-counter');
-
-      const now = Date.now();
-      const diff = Math.max(0, targetMs - now);
-
+    function compute(nowMs) {
+      const diff = Math.max(0, WEDDING_TARGET_UTC_MS - nowMs);
       const total = Math.floor(diff / 1000);
       const days = Math.floor(total / 86400);
       const hours = Math.floor((total % 86400) / 3600);
       const minutes = Math.floor((total % 3600) / 60);
+      return { days, hours, minutes };
+    }
 
-      renderDigits(daysEl, days, Math.max(2, String(days).length));
-      renderDigits(hrsEl,  hours, 2);
-      renderDigits(minEl,  minutes, 2);
-    };
+    function renderDigits(counterEl, value, minLen) {
+      if (!counterEl) return;
+      const str = String(value).padStart(minLen, '0');
+      counterEl.textContent = '';
+      for (const ch of str) {
+        const d = document.createElement('div');
+        // keep Nicepage’s styling hooks
+        d.className = 'u-countdown-number u-text-custom-color-8';
+        d.textContent = ch;
+        counterEl.appendChild(d);
+      }
+    }
 
-    // (Optional) quick debug you can temporarily enable:
-    // console.log('[wm countdown]', raw, '=>', targetMs, toUTCStamp(targetMs));
+    $$('.u-countdown', root).forEach((wrap) => {
+      if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
+      wrap.dataset.wmCountdownInit = '1';
 
-    tick();
-    const id = setInterval(tick, 1000);
-    WM_CLEANUPS.push(() => clearInterval(id));
-  });
-}
+      wrap.classList.add('wm-triple');
+
+      // IMPORTANT: Nicepage exports often leave these as .u-hidden
+      [
+        '.u-countdown-days',
+        '.u-countdown-hours',
+        '.u-countdown-minutes',
+        '.u-countdown-separator-2',
+        '.u-countdown-separator-3'
+      ].forEach(sel => wrap.querySelector(sel)?.classList.remove('u-hidden'));
+
+      const daysEl = $('.u-countdown-days .u-countdown-counter', wrap);
+      const hrsEl  = $('.u-countdown-hours .u-countdown-counter', wrap);
+      const minEl  = $('.u-countdown-minutes .u-countdown-counter', wrap);
+
+      const tick = () => {
+        const { days, hours, minutes } = compute(Date.now());
+        renderDigits(daysEl, days, Math.max(2, String(days).length));
+        renderDigits(hrsEl,  hours, 2);
+        renderDigits(minEl,  minutes, 2);
+      };
+
+      tick();
+      const id = setInterval(tick, 1000);
+      WM_CLEANUPS.push(() => clearInterval(id));
+    });
+  }
 
   // =========================================================
   // RSVP smooth scroll (bind once per DOM instance)
