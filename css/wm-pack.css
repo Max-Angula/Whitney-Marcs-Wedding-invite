@@ -1,8 +1,4 @@
-/* Whitney & Marc — wm-pack.css (CLEAN)
-   Keep this file for your *custom* styling.
-   Core UI styles for #wm-progress, #wm-top, #toggle-audio, AR overlay/buttons
-   are injected by wm-pack.js to avoid cross-page mismatch.
-*/
+/* Whitney & Marc — wm-pack.css (CLEAN) */
 
 /* ---------- Tokens ---------- */
 :root{
@@ -11,148 +7,87 @@
 }
 
 /* ---------- Persist container ---------- */
-/* JS expects this to exist; it’s fine if it’s empty */
 #wm-persist{
   position: fixed;
-  inset: auto 0 0 auto;
+  right: 0;
+  bottom: 0;
   z-index: 9999;
-  pointer-events: none;
+  pointer-events: none; /* JS buttons inside must set pointer-events:auto */
 }
 
-/* ---------- OPTIONAL legacy toggle/button styles ----------
-   If you are no longer using #wm-toggle (old system), you can delete this block.
-*/
-#wm-toggle{
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  pointer-events: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,.85);
-  border: none;
-  border-radius: 8px;
-  padding: 10px 12px;
-  box-shadow: 0 4px 18px rgba(0,0,0,.18);
-  font-family: "Playfair Display", serif;
-  color: var(--wm-color);
-  cursor: pointer;
-  overflow: visible;
-}
-#wm-toggle > span{ line-height: 0; }
-#wm-toggle::before{
-  content:"";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 140%;
-  height: 140%;
-  transform: translate(-50%,-50%) scale(.9);
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(62,47,28,.18) 0%, rgba(62,47,28,0) 60%);
-  opacity: 0;
-  pointer-events: none;
-}
-#wm-toggle.playing::before{ animation: wm-ring 2.6s ease-out infinite; }
-@keyframes wm-ring{
-  0%{ opacity:.22; transform:translate(-50%,-50%) scale(.9) }
-  70%{ opacity:.06 }
-  100%{ opacity:0; transform:translate(-50%,-50%) scale(1.25) }
-}
+/* ---------- Gift modal ---------- */
+#wm-gift-modal { position: fixed; inset: 0; display: none; z-index: 99999; }
+#wm-gift-modal.wmg-open { display: block; }
+#wm-gift-modal .wmg-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
 
-/* ---------- Tap-to-enable overlay (optional / only if you still use it) ---------- */
-#wm-sound-overlay{
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(3px);
-  z-index: 9998;
-}
-#wm-sound-overlay .card{
+#wm-gift-modal .wmg-dialog{
+  position: relative;
+  margin: 6vh auto 4vh;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fff;
-  color: var(--wm-color);
-  padding: 16px 22px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,.2);
+  border-radius: 16px;
+  padding: 20px 18px 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.25);
 }
-#wm-sound-overlay .card button{
-  margin-top: 10px;
-  border: none;
-  background: var(--wm-color);
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 10px;
+
+#wm-gift-modal .wmg-close{
+  position: absolute; top: 8px; right: 10px;
+  width: 36px; height: 36px;
+  border: 0; background: transparent;
+  font-size: 28px; color: #333;
   cursor: pointer;
-  font-family: "Playfair Display", serif;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 
-/* ---------- Lens / glow ---------- */
-#wm-lens{
-  position: fixed;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,240,220,.25), transparent 70%);
-  pointer-events: none;
-  z-index: 1;
-  mix-blend-mode: soft-light;
-  transition: transform .1s ease;
+#wm-gift-modal .wmg-grid{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 12px;
+  margin-top: 12px;
+}
+#wm-gift-modal .wmg-field{ display: contents; }
+#wm-gift-modal .wmg-label{ font-weight: 600; align-self: center; }
+#wm-gift-modal .wmg-value{
+  background: #f8f8f8;
+  padding: 8px 10px;
+  border-radius: 8px;
+  word-break: break-word;
+}
+#wm-gift-modal .wmg-copy{
+  align-self: center;
+  justify-self: end;
+  border: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #ececec;
 }
 
-/* ---------- Reveal utility ---------- */
-.reveal{
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity .6s ease, transform .6s ease;
-}
-.reveal.in{
-  opacity: 1;
-  transform: translateY(0);
+#wm-gift-modal .wmg-qr-wrap{ margin: 16px 0 6px; display: grid; place-items: center; }
+#wm-gift-modal .wmg-qr{ width: 180px; height: 180px; }
+#wm-gift-modal .wmg-qr-note{ font-size: 12px; opacity: .75; margin-top: 8px; }
+#wm-gift-modal .wmg-footer{ margin-top: 12px; display: flex; justify-content: flex-end; }
+#wm-gift-modal .wmg-download{ padding: 8px 12px; border-radius: 10px; }
+
+@media (max-width: 520px){
+  #wm-gift-modal .wmg-dialog{ margin: 4vh 10px; border-radius: 12px; }
 }
 
-/* ---------- Hover lift (keep subtle on touch devices) ---------- */
+/* ---------- Hover lift (desktop only) ---------- */
 @media (hover: hover) and (pointer: fine){
-  a.u-btn, .u-btn, button, .u-link, a[href]{
+  .u-btn, button{
     transition: transform .18s ease, box-shadow .18s ease;
   }
-  a.u-btn:hover, .u-btn:hover, button:hover, .u-link:hover, a[href]:hover{
+  .u-btn:hover, button:hover{
     transform: translateY(-1px);
     box-shadow: 0 6px 18px rgba(72,107,73,.18);
   }
 }
 
-/* ---------- Ripple (single version; JS creates nodes) ---------- */
-.wm-ripple{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 99995;
-}
-.wm-r{
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 999px;
-  background: rgba(199,167,64,.42);
-  animation: wm-r 650ms ease-out forwards;
-}
-@keyframes wm-r{
-  from{ transform: scale(.5); opacity:.95; }
-  to{ transform: scale(20); opacity:0; }
-}
-
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
-  #wm-toggle::before{ animation: none !important; }
   html :where(*) {
     animation-duration: .001ms !important;
     animation-iteration-count: 1 !important;
