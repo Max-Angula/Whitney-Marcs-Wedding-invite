@@ -763,7 +763,7 @@ function initAudioOnce() {
     initAudioOnce();
 
     // Re-enable these after you paste your full sections back in:
-    initAROnce();
+    //initAROnce();
     // initSPASwapOnce();
 
     initPage(document);
