@@ -105,29 +105,107 @@
   // 1) COUNTDOWN (CSS-ONLY: keep Nicepage timer, avoid flicker)
   // Days / Hours / Minutes only (hide seconds + other units)
   // =========================================================
-  function initCountdown(root = document) {
-    injectStyleOnce('wm-countdown-css', `
-      /* Hide everything by default inside wm-triple */
-      .u-countdown.wm-triple .u-countdown-item,
-      .u-countdown.wm-triple .u-countdown-separator { display: none !important; }
+ function initCountdown(root = document) {
+  injectStyleOnce('wm-countdown-css', `
+    /* Hide Nicepage's own counters only for our marked countdowns */
+    .u-countdown.wm-use-custom-countdown .u-countdown-wrapper,
+    .u-countdown.wm-use-custom-countdown .u-countdown-message{
+      display:none !important;
+    }
 
-      /* Show only Days / Hours / Minutes + the right separators */
-      .u-countdown.wm-triple .u-countdown-days,
-      .u-countdown.wm-triple .u-countdown-hours,
-      .u-countdown.wm-triple .u-countdown-minutes,
-      .u-countdown.wm-triple .u-countdown-separator-2,
-      .u-countdown.wm-triple .u-countdown-separator-3 { display: inline-flex !important; }
-    `);
+    /* Our UI uses the same Nicepage font/color by inheriting */
+    .wmcd-wrap{
+      display:flex;
+      gap:20px;
+      justify-content:center;
+      align-items:stretch;
+      font-family: inherit;
+      color: inherit;
+    }
+    .wmcd-item{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(199,167,64,.55);
+      min-width:74px;
+      background: rgba(0,0,0,.05);
+      backdrop-filter: blur(4px);
+    }
+    .wmcd-num{
+      display:flex;
+      gap:2px;
+      font-size:28px;
+      line-height:1;
+      font-weight:600;
+      font-family: inherit;
+      color: inherit;
+    }
+    .wmcd-label{
+      margin-top:6px;
+      font-size:12px;
+      opacity:.85;
+      font-family: inherit;
+      color: inherit;
+    }
+  `);
 
-    $$('.u-countdown', root).forEach((wrap) => {
-      if (!wrap || wrap.dataset.wmCountdownInit === '1') return;
-      wrap.dataset.wmCountdownInit = '1';
+  const compute = () => {
+    const diff = Math.max(0, WEDDING_TARGET_UTC_MS - Date.now());
+    const total = Math.floor(diff / 1000);
+    const days = Math.floor(total / 86400);
+    const hours = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    return { days, hours, minutes };
+  };
 
-      // purely styling — Nicepage keeps updating values
-      wrap.classList.add('wm-triple');
-    });
-  }
-  
+  const renderDigits = (el, value, minLen) => {
+    if (!el) return;
+    const str = String(value).padStart(minLen, '0');
+    el.textContent = '';
+    for (const ch of str) {
+      const s = document.createElement('span');
+      s.textContent = ch;
+      el.appendChild(s);
+    }
+  };
+
+  root.querySelectorAll('.u-countdown.wm-use-custom-countdown').forEach((wrap) => {
+    if (wrap.dataset.wmCountdownInit === '1') return;
+    wrap.dataset.wmCountdownInit = '1';
+
+    // Build UI once
+    let ui = wrap.querySelector('.wmcd-wrap');
+    if (!ui) {
+      ui = document.createElement('div');
+      ui.className = 'wmcd-wrap';
+      ui.innerHTML = `
+        <div class="wmcd-item"><div class="wmcd-num wmcd-days"></div><div class="wmcd-label">Days</div></div>
+        <div class="wmcd-item"><div class="wmcd-num wmcd-hours"></div><div class="wmcd-label">Hours</div></div>
+        <div class="wmcd-item"><div class="wmcd-num wmcd-mins"></div><div class="wmcd-label">Minutes</div></div>
+      `;
+      wrap.appendChild(ui);
+    }
+
+    const daysEl = wrap.querySelector('.wmcd-days');
+    const hrsEl  = wrap.querySelector('.wmcd-hours');
+    const minEl  = wrap.querySelector('.wmcd-mins');
+
+    const tick = () => {
+      const { days, hours, minutes } = compute();
+      renderDigits(daysEl, days, Math.max(2, String(days).length));
+      renderDigits(hrsEl, hours, 2);
+      renderDigits(minEl, minutes, 2);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    WM_CLEANUPS.push(() => clearInterval(id));
+  });
+}
+
   // =========================================================
   // RSVP smooth scroll (bind once per DOM instance)
   // =========================================================
@@ -745,13 +823,13 @@ function initAudioOnce() {
   function boot() {
     initFontsLoadingClassOnce();
     initProgressAndTopOnce();
-    initAudioOnce();
-   
-    // Re-enable these after you paste your full sections back in:
+    initAudioOnce(); // ✅ speaker/music
+
+    // optional:
     // initAROnce();
     // initSPASwapOnce();
 
-    initPage(document);
+    initPage(document); // ✅ includes initCountdown(document) inside initPage()
   }
 
   if (document.readyState === 'loading') {
