@@ -20,7 +20,7 @@
 
 /* ---------- Scroll Bar Top ---------- */
 #wm-progress { color: #C7A740; } /* sets the bar color */
-#wm-top.wm-top { color: #C7A740; } /* sets the arrow icon color */
+#wm-top.wm-top { color: #fffff; } /* sets the arrow icon color */
 
 /* ---------- Gift modal ---------- */
 #wm-gift-modal { position: fixed; inset: 0; display: none; z-index: 99999; }
