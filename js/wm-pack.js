@@ -320,33 +320,34 @@
     if (window.__wmProgressTopInit) return;
     window.__wmProgressTopInit = true;
 
-    injectStyleOnce('wm-progress-top-css', `
-      #wm-progress {
-        position: fixed; top: 0; left: 0; right: 0; height: 2px;
-        transform-origin: 0 50%;
-        transform: scaleX(0);
-        z-index: 99999;
-        background: currentColor;
-        opacity: .65;
-        pointer-events: none;
-      }
-      body.wm-scrolling #wm-progress { opacity: .9; }
+  injectStyleOnce('wm-progress-top-css', `
+  #wm-progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px;
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    z-index: 99999;
+    background: currentColor;
+    color: #C7A740;           /* ✅ gold bar */
+    opacity: .65;
+    pointer-events: none;
+  }
+  body.wm-scrolling #wm-progress { opacity: .9; }
 
-      #wm-top.wm-top {
-        position: fixed; right: 14px; bottom: 18px; z-index: 99998;
-        width: 46px; height: 46px; border-radius: 999px;
-        border: none; cursor: pointer;
-        display: grid; place-items: center;
-        background: rgba(0,0,0,.62);
-        color: #C7A740;
-        box-shadow: 0 10px 26px rgba(0,0,0,.22);
-        backdrop-filter: blur(6px);
-        opacity: 0; transform: translateY(10px);
-        transition: opacity .2s ease, transform .2s ease;
-      }
-      #wm-top.wm-top.show { opacity: 1; transform: translateY(0); }
-    `);
-
+  #wm-top.wm-top {
+    position: fixed; right: 14px; bottom: 18px; z-index: 99998;
+    width: 46px; height: 46px; border-radius: 999px;
+    border: none; cursor: pointer;
+    display: grid; place-items: center;
+    background: rgba(0,0,0,.62);
+    color: #C7A740;           /* ✅ gold icon */
+    box-shadow: 0 10px 26px rgba(0,0,0,.22);
+    backdrop-filter: blur(6px);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  #wm-top.wm-top.show { opacity: 1; transform: translateY(0); }
+`);
+    
     function ensureBar() {
       let bar = document.getElementById('wm-progress');
       if (!bar) {
