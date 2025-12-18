@@ -10,9 +10,6 @@
     <link rel="stylesheet" href="nicepage.css" media="screen">
     <link rel="stylesheet" href="2-Open-Envelop.css" media="screen">
 
-    <!-- ✅ WM shared styles -->
-    <link rel="stylesheet" href="css/wm-pack.css">
-
     <!-- Speed up Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -221,7 +218,7 @@
             class="u-align-center u-custom-font u-font-playfair-display u-text u-text-default-lg u-text-default-md u-text-default-sm u-text-default-xl u-text-4"
             data-animation-out="0"
           >
-            Catalàn&nbsp;
+            Català&nbsp;
           </h3>
           <img
             class="u-image u-image-contain u-image-default u-preserve-proportions u-image-3"
@@ -237,6 +234,31 @@
 
     <!-- Optional: Nicepage SPA bundle -->
     <script defer src="js/wm-pack.js"></script>
+
+    <!-- Speaker button look (single, de-duped) -->
+    <style>
+      #toggle-audio.wm-speaker{
+        position:fixed; right:16px; bottom:16px; z-index:99999;
+        width:54px; height:54px; border:none; border-radius:50%;
+        display:grid; place-items:center; padding:0;
+        background:rgba(255,255,255,.88);
+        box-shadow:0 8px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.06);
+        backdrop-filter:blur(6px);
+      }
+      #toggle-audio.wm-speaker svg{
+        width:22px; height:22px; display:block;
+      }
+      #toggle-audio.wm-speaker.playing::before{
+        content:""; position:absolute; inset:-10px; border-radius:999px;
+        background:radial-gradient(circle, rgba(62,47,28,.18) 0%, rgba(62,47,28,0) 60%);
+        animation:wmRing 2.6s ease-out infinite;
+      }
+      @keyframes wmRing{
+        0%{opacity:.22; transform:scale(.9)}
+        70%{opacity:.06}
+        100%{opacity:0; transform:scale(1.25)}
+      }
+    </style>
 
     <!-- (Optional) Footer styling, if/when you add the footer markup -->
     <style>
@@ -318,5 +340,258 @@
         .wmf-right{ display: none; }
       }
     </style>
+
+    <!-- === Global Audio Manager (lazy src, shared across pages) === -->
+    <script>
+      /* Boot guard so audio init won't double-run in SPA transitions */
+      if (!window.__wmAudioBooted) { window.__wmAudioBooted = true;
+      (() => {
+        const AUDIO_SRC  = 'https://raw.githubusercontent.com/Max-Angula/wedding-audio/main/Hot%20Chip%20%E2%80%93%20Devotion.mp3';
+        const TARGET_VOL = 0.85;
+
+        const K = {
+          approved: 'wmAudioApproved',
+          playing:  'wmAudioPlaying',
+          anchor:   'wmAudioAnchorMs',
+          lastT:    'wmAudioLastSec'
+        };
+
+        const get = (k, d=null) => {
+          try { return localStorage.getItem(k) ?? d; } catch { return d; }
+        };
+        const set = (k, v) => {
+          try { localStorage.setItem(k, v); } catch {}
+        };
+
+        const approved      = () => get(K.approved) === '1';
+        const setApproved   = v => set(K.approved, v ? '1':'0');
+        const wantsPlaying  = () => get(K.playing, '1') === '1';
+        const setWantsPlay  = v => set(K.playing, v ? '1':'0');
+        const getAnchor     = () => {
+          const v = parseInt(get(K.anchor) || '', 10);
+          return isFinite(v) ? v : null;
+        };
+        const setAnchor     = ms => set(K.anchor, String(ms));
+        const getLastT      = () => {
+          const v = parseFloat(get(K.lastT) || '');
+          return isFinite(v) ? v : 0;
+        };
+        const setLastT      = sec => set(K.lastT, String(Math.max(0, sec|0)));
+
+        function ensureAudio(){
+          let a = document.getElementById('wm-audio');
+          if (!a) {
+            a = document.createElement('audio');
+            a.id = 'wm-audio';
+            a.preload = 'none';   // no network until needed
+            a.loop = true;
+            a.autoplay = false;
+            a.playsInline = true;
+            a.crossOrigin = 'anonymous';
+            // src set lazily when first played
+            document.body.appendChild(a);
+          }
+          return a;
+        }
+
+        function fadeTo(audio, toVol, ms=600){
+          const from  = audio.volume ?? 0;
+          const start = performance.now();
+          const step  = (t) => {
+            const k = Math.min(1, (t - start) / ms);
+            try { audio.volume = from + (toVol - from) * k; } catch {}
+            if (k < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+
+        function computeCurrentTime(duration) {
+          const now    = Date.now();
+          const anchor = getAnchor();
+          if (anchor && duration && isFinite(duration) && duration > 1) {
+            const elapsed = Math.max(0, (now - anchor) / 1000);
+            return elapsed % duration;
+          }
+          return getLastT();
+        }
+
+        async function loadSrcIfNeeded(audio){
+          if (!audio.src) {
+            audio.src = AUDIO_SRC;
+            try { await audio.load?.(); } catch {}
+          }
+        }
+
+        async function startPlayback(audio){
+          await loadSrcIfNeeded(audio);
+          if (!approved()) {
+            setApproved(true);
+            setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
+          }
+          try {
+            audio.volume = 0.0;
+            await audio.play();
+            setWantsPlay(true);
+            fadeTo(audio, TARGET_VOL, 900);
+          } catch {}
+        }
+
+        function wireFirstGesture(fn){
+          const once = async () => { off(); await fn(); };
+          const off  = () => ['click','touchstart','keydown','scroll']
+            .forEach(ev => window.removeEventListener(ev, once, { passive:true }));
+          ['click','touchstart','keydown','scroll']
+            .forEach(ev => window.addEventListener(ev, once, { passive:true, once:true }));
+        }
+
+        function upsertToggle(){
+          let btn = document.getElementById('toggle-audio');
+          if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'toggle-audio';
+            btn.className = 'wm-speaker';
+            btn.title = 'Music';
+            document.body.appendChild(btn);
+          } else {
+            btn.classList.add('wm-speaker');
+          }
+          return btn;
+        }
+
+        const SVG_ON = `
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M11 5 7 9H3v6h4l4 4V5Z"
+                  stroke="currentColor" stroke-width="1.6"
+                  fill="none" stroke-linejoin="round"/>
+            <path d="M17 9a5 5 0 0 1 0 6M20 7a8 8 0 0 1 0 10"
+                  stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" fill="none"/>
+          </svg>`;
+        const SVG_OFF = `
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M11 5 7 9H3v6h4l4 4V5Z"
+                  stroke="currentColor" stroke-width="1.6"
+                  fill="none" stroke-linejoin="round"/>
+            <path d="M16 9l5 5m0-5-5 5"
+                  stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round"/>
+          </svg>`;
+
+        function setIcon(btn, playing){
+          btn.innerHTML = playing ? SVG_ON : SVG_OFF;
+          btn.classList.toggle('playing', playing);
+          btn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
+        }
+
+        async function boot(){
+          const audio = ensureAudio();
+          const btn   = upsertToggle();
+
+          audio.addEventListener('timeupdate', () => setLastT(audio.currentTime));
+          audio.addEventListener('seeking',    () => setLastT(audio.currentTime));
+          audio.addEventListener('play',       () => setWantsPlay(true));
+          audio.addEventListener('pause',      () => setWantsPlay(false));
+
+          audio.addEventListener('loadedmetadata', () => {
+            const t = computeCurrentTime(audio.duration);
+            try { audio.currentTime = t; } catch {}
+          }, { once:true });
+
+          setIcon(btn, !audio.paused);
+
+          btn.addEventListener('click', async () => {
+            if (audio.paused) {
+              if (!getAnchor()) {
+                setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
+              }
+              await startPlayback(audio);
+            } else {
+              try { audio.pause(); } catch {}
+              setWantsPlay(false);
+            }
+            setIcon(btn, !audio.paused);
+            try { navigator.vibrate && navigator.vibrate(8); } catch {}
+          });
+
+          if ('mediaSession' in navigator) {
+            try {
+              navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'Ceremony Prelude',
+                artist: 'Whitney & Marc',
+                album: 'Wedding Invitation'
+              });
+              navigator.mediaSession.setActionHandler('play',  () => startPlayback(audio));
+              navigator.mediaSession.setActionHandler('pause', () => {
+                try { audio.pause(); } catch {}
+                setWantsPlay(false);
+              });
+            } catch {}
+          }
+
+          if (approved() && wantsPlaying()) {
+            try {
+              await startPlayback(audio);
+            } catch {
+              wireFirstGesture(() => startPlayback(audio));
+            }
+          } else if (!approved()) {
+            wireFirstGesture(() => startPlayback(audio));
+          }
+
+          setInterval(() => {
+            if (!audio.paused) setLastT(audio.currentTime);
+          }, 1500);
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', boot, { once:true });
+        } else {
+          boot();
+        }
+
+        window.addEventListener('wm:page-swapped', () => setTimeout(boot, 30));
+      })();
+      } /* end boot guard */
+    </script>
+
+    <!-- Tiny preloader logic -->
+    <script id="wm-lite-preloader-js">
+      (function(){
+        const el = document.getElementById('wm-lite-preloader');
+        if(!el) return;
+
+        let done = false;
+        const MIN_SHOW  = 1400;  // at least this long
+        const HARD_STOP = 3500;  // safety net
+        const t0 = performance.now();
+
+        function finish(){
+          if(done) return;
+          done = true;
+          const wait = Math.max(0, MIN_SHOW - (performance.now()-t0));
+          setTimeout(() => {
+            el.classList.add('is-done');
+            setTimeout(() => el.remove(), 500);
+          }, wait);
+        }
+
+        window.addEventListener('load', finish, { passive:true });
+
+        const hero = document.querySelector('.u-section-1 .u-image-1');
+        if (hero && hero.decode) {
+          hero.decode().catch(()=>{}).then(finish);
+        }
+
+        ['.u-group-1', '.u-group-2'].forEach(sel => {
+          const btn = document.querySelector(sel);
+          if (btn) btn.addEventListener('click', finish, { passive:true });
+        });
+
+        setTimeout(finish, HARD_STOP);
+
+        if (document.readyState === 'complete') finish();
+      })();
+    </script>
+
   </body>
 </html>
