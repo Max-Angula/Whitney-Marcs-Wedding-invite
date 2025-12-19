@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
   <title>5 Hotel</title>
-
+   <link rel="stylesheet" href="css/wm-pack.css">
   <link rel="stylesheet" href="nicepage.css" media="screen">
   <link rel="stylesheet" href="5-Hotel.css" media="screen">
   <script class="u-script" type="text/javascript" src="jquery.js" defer></script>
@@ -75,7 +75,13 @@
   --pad-x: 20px;
   --blur: 6px;
 
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999; /* make it static: change to position:static */
+   :root { --wm-footer-h: 72px; }
+  
+  body{
+    padding-bottom: var(--wm-footer-h);
+  }
+
+  position: fixed; left: 0; right: 0; bottom: 0;/* make it static: change to position:static */
   color: rgba(var(--text), .95);
   backdrop-filter: blur(var(--blur)) saturate(115%);
   -webkit-backdrop-filter: blur(var(--blur)) saturate(115%);
@@ -171,40 +177,54 @@
   </header>
 
   <main>
-    <section class="u-clearfix u-image u-section-1" id="block-7" data-image-width="1024" data-image-height="1536">
-      <div class="u-clearfix u-sheet u-sheet-1">
-        <div class="data-layout-selected u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
-          <div class="u-layout">
-            <div class="u-layout-row">
+  <section class="u-clearfix u-image u-section-1" id="block-7" data-image-width="1024" data-image-height="1536">
+    <div class="u-clearfix u-sheet u-sheet-1">
+      <div class="data-layout-selected u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+        <div class="u-layout">
+          <div class="u-layout-row">
 
-              <div class="u-container-style u-image u-layout-cell u-size-20 u-image-1" data-image-width="1024" data-image-height="1536" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
-                <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-1">
-                  <a href="https://ateneaportbarcelonamataro.com-hotel.com/es/" class="u-align-center u-btn u-button-style u-btn-1" target="_blank">
-                    <span class="u-file-icon u-icon u-icon-1"><img src="images/hotel-ring.gif" alt=""></span>
-                    Atenea Port Barcelona Mataró
-                  </a>
-                </div>
+            <!-- Hotel 1 -->
+            <div class="u-container-style u-image u-layout-cell u-size-20 u-image-1" data-image-width="1024" data-image-height="1536" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+              <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-1">
+                <a href="https://ateneaportbarcelonamataro.com-hotel.com/es/" class="u-align-center u-btn u-button-style u-btn-1" target="_blank" rel="noopener">
+                  <span class="u-file-icon u-icon u-icon-1"><img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async" alt=""></span>
+                  Atenea Port Barcelona Mataró
+                </a>
               </div>
+            </div>
 
-              <div class="u-container-style u-layout-cell u-size-20 u-layout-cell-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
-                <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-2">
-                  <img class="u-expanded-width u-image u-image-contain u-image-default u-image-2" src="images/ChatGPTImageOct8202503_49_57PM70.png" alt="" data-image-width="1024" data-image-height="1536" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
-                  <a href="https://www.hotel-bb.com/es/hotel/barcelona-mataro" class="u-align-center u-btn u-button-style u-btn-2" target="_blank">
-                    <span class="u-file-icon u-icon u-icon-2"><img src="images/hotel-ring.gif" alt=""></span>
-                    B&amp;B HOTEL Barcelona Mataró
-                  </a>
-                </div>
+            <!-- Hotel 2 -->
+            <div class="u-container-style u-layout-cell u-size-20 u-layout-cell-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+              <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-2">
+                <img class="u-expanded-width u-image u-image-contain u-image-default u-image-2"
+                     src="images/ChatGPTImageOct8202503_49_57PM70.png"
+                     alt="" data-image-width="1024" data-image-height="1536"
+                     loading="lazy" decoding="async">
+                <a href="https://www.hotel-bb.com/es/hotel/barcelona-mataro" class="u-align-center u-btn u-button-style u-btn-2" target="_blank" rel="noopener">
+                  <span class="u-file-icon u-icon u-icon-2"><img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async" alt="" loading="lazy" decoding="async" alt=""></span>
+                  B&amp;B HOTEL Barcelona Mataró
+                </a>
               </div>
+            </div>
 
-              <div class="u-container-style u-image u-layout-cell u-size-20 u-image-3" data-image-width="1024" data-image-height="1536" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
-                <div class="u-container-layout u-valign-bottom-lg u-valign-bottom-md u-valign-bottom-sm u-valign-bottom-xl u-container-layout-3">
-                  <a href="https://xanascat.gencat.cat/ca/albergs/albergs/cabrera-de-mar-xanascat" class="u-align-center u-btn u-button-style u-btn-3" target="_blank">
-                    <span class="u-file-icon u-icon u-icon-3"><img src="images/hotel-ring.gif" alt=""></span>
-                    Xanascat, la xarxa jove d'albergs de Catalunya
-                  </a>
-      </div>
-    </section>
-  </main>
+            <!-- Hotel 3 -->
+            <div class="u-container-style u-image u-layout-cell u-size-20 u-image-3" data-image-width="1024" data-image-height="1536" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+              <div class="u-container-layout u-valign-bottom-lg u-valign-bottom-md u-valign-bottom-sm u-valign-bottom-xl u-container-layout-3">
+                <a href="https://xanascat.gencat.cat/ca/albergs/albergs/cabrera-de-mar-xanascat"
+                   class="u-align-center u-btn u-button-style u-btn-3" target="_blank" rel="noopener">
+                  <span class="u-file-icon u-icon u-icon-3"><img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async alt=""></span>
+                  Xanascat, la xarxa jove d'albergs de Catalunya
+                </a>
+              </div>
+            </div>
+
+          </div><!-- /.u-layout-row -->
+        </div><!-- /.u-layout -->
+      </div><!-- /.u-layout-wrap -->
+    </div><!-- /.u-sheet -->
+  </section>
+</main>
+
   <!-- Wedding footer (shows, and also hides any Nicepage backlink) -->
 <footer class="wm-footer wm-footer--bar" aria-label="Wedding footer">
   <div class="wmf-inner">
@@ -233,187 +253,5 @@
     setTimeout(tick, 1000);
   })();
 </script>
-
-  <script>
-  /* === Global Audio Manager (persist play/mute + seamless position across pages) === */
-  (() => {
-    const AUDIO_SRC = 'https://raw.githubusercontent.com/Max-Angula/wedding-audio/main/Hot%20Chip%20%E2%80%93%20Devotion.mp3';
-    const TARGET_VOL = 0.85;
-
-    const K = {
-      approved: 'wmAudioApproved',
-      playing:  'wmAudioPlaying',
-      anchor:   'wmAudioAnchorMs',
-      lastT:    'wmAudioLastSec'
-    };
-
-    const get = (k, d=null) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
-    const set = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
-
-    const approved = () => get(K.approved) === '1';
-    const setApproved = v => set(K.approved, v ? '1':'0');
-    const wantsPlaying = () => get(K.playing, '1') === '1';
-    const setWantsPlaying = v => set(K.playing, v ? '1':'0');
-    const getAnchor = () => { const v = parseInt(get(K.anchor)||'',10); return isFinite(v) ? v : null; };
-    const setAnchor = ms => set(K.anchor, String(ms));
-    const getLastT = () => { const v = parseFloat(get(K.lastT)||''); return isFinite(v) ? v : 0; };
-    const setLastT = sec => set(K.lastT, String(Math.max(0, sec|0)));
-
-    function ensureAudio() {
-      let a = document.getElementById('wm-audio');
-      if (!a) {
-        a = document.createElement('audio');
-        a.id = 'wm-audio';
-        a.preload = 'auto';
-        a.loop = true;
-        a.autoplay = false;
-        a.playsInline = true;
-        a.crossOrigin = 'anonymous';
-        a.src = AUDIO_SRC;
-        document.body.appendChild(a);
-      }
-      return a;
-    }
-
-    function fadeTo(audio, toVol, ms=600) {
-      const from = (audio.volume ?? 0);
-      const start = performance.now();
-      function step(t){
-        const k = Math.min(1, (t - start) / ms);
-        try { audio.volume = from + (toVol - from) * k; } catch {}
-        if (k < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    function computeCurrentTime(duration) {
-      const now = Date.now();
-      const anchor = getAnchor();
-      if (anchor && duration && isFinite(duration) && duration > 1) {
-        const elapsed = Math.max(0, (now - anchor) / 1000);
-        return elapsed % duration;
-      }
-      return getLastT();
-    }
-
-    async function startPlayback(audio){
-      if (!approved()) {
-        setApproved(true);
-        setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
-      }
-      try {
-        audio.volume = 0.0;
-        await audio.play();
-        setWantsPlaying(true);
-        fadeTo(audio, TARGET_VOL, 900);
-      } catch {}
-    }
-
-    function wireFirstGesture(fn){
-      const once = async () => { off(); await fn(); };
-      const off  = () => ['click','touchstart','keydown','scroll'].forEach(ev => window.removeEventListener(ev, once, { passive:true }));
-      ['click','touchstart','keydown','scroll'].forEach(ev => window.addEventListener(ev, once, { passive:true, once:true }));
-    }
-
-    function wireToggle(audio){
-      let btn = document.getElementById('toggle-audio');
-      if (!btn) {
-        btn = document.createElement('button');
-        btn.id = 'toggle-audio';
-        btn.className = 'wm-speaker';
-        document.body.appendChild(btn);
-      }
-
-      const SVG_ON = `
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
-          <path d="M15.5 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          <path d="M18.5 7a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>`;
-      const SVG_OFF = `
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M11 5 7 9H3v6h4l4 4V5Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"/>
-          <path d="M16 9l5 5m0-5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>`;
-
-      const setUI = () => {
-        const playing = !audio.paused;
-        btn.innerHTML = playing ? SVG_ON : SVG_OFF;
-        btn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
-        btn.classList.toggle('playing', playing);
-      };
-      setUI();
-
-      btn.addEventListener('click', async () => {
-        if (audio.paused) {
-          if (!getAnchor()) setAnchor(Date.now() - Math.floor(audio.currentTime || 0) * 1000);
-          await startPlayback(audio);
-        } else {
-          try { audio.pause(); } catch {}
-          setWantsPlaying(false);
-        }
-        setUI();
-        try { navigator.vibrate && navigator.vibrate(8); } catch {}
-      });
-
-      audio.addEventListener('play', setUI);
-      audio.addEventListener('pause', setUI);
-    }
-
-    async function boot() {
-      const audio = ensureAudio();
-
-      audio.addEventListener('timeupdate', () => setLastT(audio.currentTime));
-      audio.addEventListener('seeking',    () => setLastT(audio.currentTime));
-      audio.addEventListener('loadedmetadata', () => {
-        const t = computeCurrentTime(audio.duration);
-        try { audio.currentTime = t; } catch {}
-      }, { once: true });
-
-      if (!approved()) {
-        wireFirstGesture(() => startPlayback(audio));
-      } else {
-        if (isFinite(audio.duration) && audio.duration > 1) {
-          try { audio.currentTime = computeCurrentTime(audio.duration); } catch {}
-        }
-        if (wantsPlaying()) {
-          try {
-            audio.volume = 0.0;
-            await audio.play();
-            fadeTo(audio, TARGET_VOL, 900);
-          } catch {
-            wireFirstGesture(() => startPlayback(audio));
-          }
-        } else {
-          try { audio.pause(); } catch {}
-          audio.volume = TARGET_VOL;
-        }
-      }
-
-      wireToggle(audio);
-
-      if ('mediaSession' in navigator) {
-        try {
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: 'Ceremony Prelude',
-            artist: 'Whitney & Marc',
-            album: 'Wedding Invitation'
-          });
-          navigator.mediaSession.setActionHandler('play',  () => startPlayback(audio));
-          navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); setWantsPlaying(false); });
-        } catch {}
-      }
-
-      setInterval(() => { if (!audio.paused) setLastT(audio.currentTime); }, 1500);
-    }
-
-    document.addEventListener('DOMContentLoaded', boot);
-
-    /* Also remove any late-injected backlink/footer nodes */
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelectorAll('.u-backlink, .u-footer, footer.u-footer').forEach(n => n.remove());
-    });
-  })();
-  </script>
 </body>
 </html>
