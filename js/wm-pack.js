@@ -119,8 +119,8 @@
       gap:20px;
       justify-content:center;
       align-items:stretch;
-      font-family: inherit;
-      color: inherit;
+      font-family: 'Playfair Display', serif;
+      color: #C7A740;
     }
     .wmcd-item{
       display:flex;
@@ -140,15 +140,15 @@
       font-size:28px;
       line-height:1;
       font-weight:600;
-      font-family: inherit;
-      color: inherit;
+      font-family: 'Playfair Display', serif;
+      color: #C7A740;
     }
     .wmcd-label{
       margin-top:6px;
       font-size:12px;
       opacity:.85;
-      font-family: inherit;
-      color: inherit;
+      font-family: 'Playfair Display', serif;
+      color: #C7A740;
     }
   `);
 
