@@ -101,7 +101,7 @@
     place-items: center;
     background: radial-gradient(1200px 800px at 50% 35%, rgba(199,167,64,.10), rgba(0,0,0,.92) 60%);
     color: #C7A740;
-    transition: opacity .45s ease, visibility .45s ease;
+    transition: opacity .9s ease, visibility .9s ease;
   }
   #wm-preloader.wm-hide{
     opacity: 0;
@@ -981,9 +981,16 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
         p.classList.add('wm-hide');
       }, 2500);
 
+      var shownAt = Date.now();
+      var MIN_SHOW = 1800; // ← milliseconds (1.8 seconds)
+      
       function hide(){
         clearTimeout(kill);
-        p.classList.add('wm-hide');
+        var elapsed = Date.now() - shownAt;
+        var wait = Math.max(0, MIN_SHOW - elapsed);
+        setTimeout(function(){
+          p.classList.add('wm-hide');
+        }, wait);
       }
 
       if (document.readyState === 'complete') return hide();
