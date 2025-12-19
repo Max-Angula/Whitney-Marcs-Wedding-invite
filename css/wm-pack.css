@@ -22,6 +22,44 @@
 #wm-progress { color: #C7A740; } /* sets the bar color */
 #wm-top.wm-top { color: #fffff; } /* sets the arrow icon color */
 
+/* ---------- Countdown (custom) ---------- */
+.u-countdown.wm-use-custom-countdown .wmcd-wrap{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  align-items:stretch;
+
+  font-family: "Playfair Display", serif;
+  color: #C7A740;
+}
+
+.u-countdown.wm-use-custom-countdown .wmcd-item{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(199,167,64,.55);
+  min-width:74px;
+  background: rgba(0,0,0,.05);
+  backdrop-filter: blur(4px);
+}
+
+.u-countdown.wm-use-custom-countdown .wmcd-num{
+  display:flex;
+  gap:2px;
+  font-size:28px;
+  line-height:1;
+  font-weight:600;
+}
+
+.u-countdown.wm-use-custom-countdown .wmcd-label{
+  margin-top:6px;
+  font-size:12px;
+  opacity:.85;
+}
+
 /* ---------- Gift modal ---------- */
 #wm-gift-modal { position: fixed; inset: 0; display: none; z-index: 99999; }
 #wm-gift-modal.wmg-open { display: block; }
