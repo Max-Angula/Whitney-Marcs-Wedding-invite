@@ -1831,6 +1831,28 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       });
     })();
     </script>
+<script>
+(function(){
+  const pre = () => document.getElementById('wm-preloader');
+
+  function hide(){
+    const el = pre();
+    if (!el) return;
+    el.classList.add('wm-hide');
+    // Optional: remove after fade
+    setTimeout(() => { try { el.remove(); } catch(e){} }, 1100);
+  }
+
+  // Hide when page is fully loaded
+  window.addEventListener('load', hide, { once:true });
+
+  // Safety fallback (if some resource stalls)
+  setTimeout(hide, 4500);
+
+  // Back/forward cache (Safari/iOS)
+  window.addEventListener('pageshow', (e) => { if (e.persisted) hide(); });
+})();
+</script>
 
   </body>
 </html>
