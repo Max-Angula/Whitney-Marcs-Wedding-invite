@@ -245,5 +245,29 @@
       setTimeout(tick, 1000);
     })();
   </script>
+  <script>
+  (function () {
+    const root = document.documentElement;
+    const footer = document.querySelector('.wm-footer--bar');
+    if (!footer) return;
+
+    function updateFooterHeight() {
+      const h = footer.offsetHeight || 0;
+      root.style.setProperty('--wm-footer-h', h + 'px');
+    }
+
+    // Initial measurement
+    updateFooterHeight();
+
+    // Recalculate on resize / rotation
+    window.addEventListener('resize', updateFooterHeight, { passive: true });
+    window.addEventListener('orientationchange', updateFooterHeight, { passive: true });
+
+    // Fonts can affect height
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(updateFooterHeight);
+    }
+  })();
+</script>
 </body>
 </html>
