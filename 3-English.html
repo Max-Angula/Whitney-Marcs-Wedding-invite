@@ -7,64 +7,6 @@
   <!-- Optional (but good): wm-pack.css early so its styles apply ASAP -->
   <link rel="stylesheet" href="css/wm-pack.css">
 
-  <!-- ✅ PRELOADER (WORKING) -->
-  <style id="wm-preloader-css">
-    /* Lock scroll while loading */
-    html.wm-loading,
-    html.wm-loading body { height: 100%; overflow: hidden; }
-
-    /* Fullscreen overlay */
-    #wm-preloader{
-      position: fixed;
-      inset: 0;
-      z-index: 100000; /* higher than your modals (99999) */
-      display: grid;
-      place-items: center;
-      background: rgba(20,20,20,.92);
-      opacity: 1;
-      visibility: visible;
-      transition: opacity .35s ease, visibility .35s ease;
-      pointer-events: all;
-    }
-
-    /* When done */
-    html.wm-loaded #wm-preloader{
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    /* Simple spinner */
-    .wm-preloader-inner{
-      display: grid;
-      place-items: center;
-      gap: 12px;
-      text-align: center;
-      padding: 18px 16px;
-    }
-    .wm-spinner{
-      width: 42px;
-      height: 42px;
-      border-radius: 999px;
-      border: 3px solid rgba(255,255,255,.25);
-      border-top-color: rgba(255,255,255,.9);
-      animation: wmSpin .9s linear infinite;
-    }
-    @keyframes wmSpin { to { transform: rotate(360deg); } }
-
-    .wm-loading-text{
-      font: 500 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color: rgba(255,255,255,.85);
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .wm-spinner{ animation: none; }
-      #wm-preloader{ transition: none; }
-    }
-  </style>
-
   <script id="wm-preloader-js">
     (function(){
       // show preloader ASAP
@@ -176,8 +118,151 @@
   <meta name="theme-color" content="#478ac9">
   <meta property="og:title" content="3 English">
   <meta property="og:type" content="website">
+    <!-- ✅ PRELOADER (WORKING) -->
+<style>
+  #wm-preloader{
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(1200px 800px at 50% 35%, rgba(199,167,64,.10), rgba(0,0,0,.92) 60%);
+    color: #C7A740;
+    transition: opacity .9s ease, visibility .9s ease;
+  }
+  #wm-preloader.wm-hide{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .wm-pre-card{
+    width: min(320px, 86vw);
+    padding: 22px 18px 18px;
+    border-radius: 18px;
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(199,167,64,.35);
+    box-shadow: 0 22px 60px rgba(0,0,0,.45);
+    backdrop-filter: blur(10px);
+    text-align: center;
+  }
+  .wm-pre-monogram{
+    font-family: "Playfair Display", serif;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: .06em;
+    margin: 2px 0 8px;
+  }
+  .wm-pre-sub{
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    opacity: .92;
+    margin-bottom: 16px;
+  }
+  .wm-pre-line{
+    height: 2px;
+    width: 100%;
+    border-radius: 999px;
+    background: rgba(199,167,64,.18);
+    overflow: hidden;
+    position: relative;
+  }
+  .wm-pre-line::before{
+    content:"";
+    position:absolute;
+    inset: 0;
+    transform: translateX(-60%);
+    background: linear-gradient(90deg, transparent, rgba(199,167,64,.85), transparent);
+    animation: wm-pre-sheen 1.15s ease-in-out infinite;
+  }
+  @keyframes wm-pre-sheen{
+    0%{ transform: translateX(-60%); }
+    100%{ transform: translateX(60%); }
+  }
+  .wm-pre-note{
+    margin-top: 12px;
+    font-size: 12px;
+    opacity: .75;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wm-pre-line::before{ animation: none; }
+    #wm-preloader{ transition: none; }
+  }
+</style>
+    <!-- ✅ PRELOADER (WORKING) -->
+<style>
+  #wm-preloader{
+    position: fixed;
+    inset: 0;
+    z-index: 1000000;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(1200px 800px at 50% 35%, rgba(199,167,64,.10), rgba(0,0,0,.92) 60%);
+    color: #C7A740;
+    transition: opacity .9s ease, visibility .9s ease;
+  }
+  #wm-preloader.wm-hide{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .wm-pre-card{
+    width: min(320px, 86vw);
+    padding: 22px 18px 18px;
+    border-radius: 18px;
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(199,167,64,.35);
+    box-shadow: 0 22px 60px rgba(0,0,0,.45);
+    backdrop-filter: blur(10px);
+    text-align: center;
+  }
+  .wm-pre-monogram{
+    font-family: "Playfair Display", serif;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: .06em;
+    margin: 2px 0 8px;
+  }
+  .wm-pre-sub{
+    font-family: "Playfair Display", serif;
+    font-size: 13px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    opacity: .92;
+    margin-bottom: 16px;
+  }
+  .wm-pre-line{
+    height: 2px;
+    width: 100%;
+    border-radius: 999px;
+    background: rgba(199,167,64,.18);
+    overflow: hidden;
+    position: relative;
+  }
+  .wm-pre-line::before{
+    content:"";
+    position:absolute;
+    inset: 0;
+    transform: translateX(-60%);
+    background: linear-gradient(90deg, transparent, rgba(199,167,64,.85), transparent);
+    animation: wm-pre-sheen 1.15s ease-in-out infinite;
+  }
+  @keyframes wm-pre-sheen{
+    0%{ transform: translateX(-60%); }
+    100%{ transform: translateX(60%); }
+  }
+  .wm-pre-note{
+    margin-top: 12px;
+    font-size: 12px;
+    opacity: .75;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wm-pre-line::before{ animation: none; }
+    #wm-preloader{ transition: none; }
+  }
+</style>
 </head>
-
 <body data-path-to-root="./" data-include-products="false"
       class="u-body u-clearfix u-grey-90 u-overlap u-xl-mode"
       data-lang="en">
@@ -1831,28 +1916,40 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       });
     })();
     </script>
-<script>
-(function(){
-  const pre = () => document.getElementById('wm-preloader');
+   <script>
+    (function(){
+      var p = document.getElementById('wm-preloader');
+      if (!p) return;
 
-  function hide(){
-    const el = pre();
-    if (!el) return;
-    el.classList.add('wm-hide');
-    // Optional: remove after fade
-    setTimeout(() => { try { el.remove(); } catch(e){} }, 1100);
-  }
+      var kill = setTimeout(function(){
+        p.classList.add('wm-hide');
+      }, 2500);
 
-  // Hide when page is fully loaded
-  window.addEventListener('load', hide, { once:true });
+      var shownAt = Date.now();
+      var MIN_SHOW = 1800; // ← milliseconds (1.8 seconds)
+      
+      function hide(){
+        clearTimeout(kill);
+        var elapsed = Date.now() - shownAt;
+        var wait = Math.max(0, MIN_SHOW - elapsed);
+        setTimeout(function(){
+          p.classList.add('wm-hide');
+        }, wait);
+      }
 
-  // Safety fallback (if some resource stalls)
-  setTimeout(hide, 4500);
+      if (document.readyState === 'complete') return hide();
 
-  // Back/forward cache (Safari/iOS)
-  window.addEventListener('pageshow', (e) => { if (e.persisted) hide(); });
-})();
-</script>
-
+      window.addEventListener('load', function(){
+        requestAnimationFrame(function(){
+          var hero = document.querySelector('img[src*="IMG_8768"]');
+          if (hero && hero.decode) {
+            hero.decode().then(hide).catch(hide);
+          } else {
+            hide();
+          }
+        });
+      }, { once: true });
+    })();
+  </script>
   </body>
 </html>
