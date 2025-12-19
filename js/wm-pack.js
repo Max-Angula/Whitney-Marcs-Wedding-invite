@@ -106,7 +106,6 @@
   // Days / Hours / Minutes only (hide seconds + other units)
   // =========================================================
  function initCountdown(root = document) {
-  injectStyleOnce('wm-countdown-css', `
     /* Hide Nicepage's own counters only for our marked countdowns */
     .u-countdown.wm-use-custom-countdown .u-countdown-wrapper,
     .u-countdown.wm-use-custom-countdown .u-countdown-message{
