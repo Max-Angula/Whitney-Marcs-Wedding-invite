@@ -7,18 +7,93 @@
   <!-- Optional (but good): wm-pack.css early so its styles apply ASAP -->
   <link rel="stylesheet" href="css/wm-pack.css">
 
-  <!-- ✅ PRELOADER (place here) -->
-  <style>
-     /* (paste the exact same preloader CSS from Spanish.html here) */
+  <!-- ✅ PRELOADER (WORKING) -->
+  <style id="wm-preloader-css">
+    /* Lock scroll while loading */
+    html.wm-loading,
+    html.wm-loading body { height: 100%; overflow: hidden; }
+
+    /* Fullscreen overlay */
+    #wm-preloader{
+      position: fixed;
+      inset: 0;
+      z-index: 100000; /* higher than your modals (99999) */
+      display: grid;
+      place-items: center;
+      background: rgba(20,20,20,.92);
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .35s ease, visibility .35s ease;
+      pointer-events: all;
+    }
+
+    /* When done */
+    html.wm-loaded #wm-preloader{
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Simple spinner */
+    .wm-preloader-inner{
+      display: grid;
+      place-items: center;
+      gap: 12px;
+      text-align: center;
+      padding: 18px 16px;
+    }
+    .wm-spinner{
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 3px solid rgba(255,255,255,.25);
+      border-top-color: rgba(255,255,255,.9);
+      animation: wmSpin .9s linear infinite;
+    }
+    @keyframes wmSpin { to { transform: rotate(360deg); } }
+
+    .wm-loading-text{
+      font: 500 14px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: rgba(255,255,255,.85);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .wm-spinner{ animation: none; }
+      #wm-preloader{ transition: none; }
+    }
   </style>
-    
-  <script>
-    /* (paste the exact same preloader JS from Spanish.html here) */
+
+  <script id="wm-preloader-js">
+    (function(){
+      // show preloader ASAP
+      document.documentElement.classList.add('wm-loading');
+
+      function done(){
+        // guard so we don't run twice
+        if (document.documentElement.classList.contains('wm-loaded')) return;
+        document.documentElement.classList.add('wm-loaded');
+        document.documentElement.classList.remove('wm-loading');
+
+        // optional: remove from DOM after fade to avoid any clicks being blocked
+        var el = document.getElementById('wm-preloader');
+        if (el) setTimeout(function(){ el.remove(); }, 600);
+      }
+
+      // Hide when everything is loaded
+      window.addEventListener('load', done, { once:true });
+
+      // Safety fallback (if some resource hangs)
+      setTimeout(done, 4500);
+
+      // Handle back/forward cache (Safari/iOS especially)
+      window.addEventListener('pageshow', function(e){
+        if (e.persisted) done();
+      });
+    })();
   </script>
   <!-- ✅ /PRELOADER -->
-
-  
-
   <!-- ================= FONT PERFORMANCE (VERY IMPORTANT) ================= -->
 
   <!-- Preconnect first -->
@@ -107,9 +182,12 @@
       class="u-body u-clearfix u-grey-90 u-overlap u-xl-mode"
       data-lang="en">
   
-  <!-- ✅ PRELOADER MARKUP (place here) -->
-  <div id="wm-preloader" aria-hidden="true">
-    <!-- (paste the same preloader HTML markup from Spanish.html here) -->
+ <!-- ✅ PRELOADER MARKUP (WORKING) -->
+  <div id="wm-preloader" role="status" aria-live="polite" aria-label="Loading">
+    <div class="wm-preloader-inner">
+      <div class="wm-spinner" aria-hidden="true"></div>
+      <div class="wm-loading-text">Loading…</div>
+    </div>
   </div>
   <!-- ✅ /PRELOADER -->
 
