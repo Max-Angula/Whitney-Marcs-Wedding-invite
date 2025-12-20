@@ -70,8 +70,25 @@
   <link rel="stylesheet" href="nicepage.css" media="screen">
   <link rel="stylesheet" href="4-Spanish.css" media="screen">
 
-  <script src="jquery.js" defer></script>
-  <script src="nicepage.js" defer></script>
+    <script src="jquery.js" defer></script>
+    <script src="nicepage.js" defer></script>
+    
+    <!-- ✅ Make Nicepage ignore Formspree forms (prevents reCAPTCHA error) -->
+    <script>
+      window.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('form[action*="formspree.io"]').forEach(function (form) {
+          // Remove Nicepage form hooks if they were auto-added
+          form.removeAttribute('data-u-form');
+          form.removeAttribute('data-formServices');
+          form.removeAttribute('data-sitekey');
+    
+          // Remove any hidden Nicepage recaptcha inputs if present
+          form.querySelectorAll('input[name="recaptchaResponse"], input[name="formServices"], input[name="siteKey"]').forEach(function(i){
+            i.remove();
+          });
+        });
+      });
+    </script>
 
   <!-- ================= META ================= -->
 
@@ -190,7 +207,7 @@
         <h1 class="u-align-center u-custom-font u-text u-text-color-var u-text-default u-title u-text-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">Y</h1>
         <h1 class="u-align-center u-custom-font u-text u-text-color-var u-text-default-lg u-text-default-md u-text-default-sm u-text-default-xl u-title u-text-4 wm-initial" data-animation-out="0" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">M</h1>
         <h1 class="u-align-center u-custom-font u-font-playfair-display u-text u-text-color-var u-text-default u-title u-text-5" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">A​RC</h1>
-       <a href="#rsvp-form" id="rsvp-btn" class="u-align-center u-btn u-btn-round u-button-style u-custom-font u-font-playfair-display u-radius u-btn-1"data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">rsvp</a>
+       <a href="#rsvp" id="rsvp-btn" class="u-align-center u-btn u-btn-round u-button-style u-custom-font u-font-playfair-display u-radius u-btn-1"data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0">rsvp</a>
  </div>
     </section>
     <section class="u-clearfix u-image u-section-2" id="sec-3c3f" data-image-width="1024" data-image-height="1536">
@@ -909,13 +926,14 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
         <p class="u-align-center u-custom-font u-font-playfair-display u-text u-text-custom-color-8 u-text-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> Si et plau, confirma la teva assistència com a màxim 30 dies abans de la data del casament.</p>
         <a href="#" class="u-active-none u-align-center u-border-2 u-border-active-palette-1-light-2 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-color-var u-text-hover-custom-color-8 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> CONFIRMACIÓ</a>
         <a href="mailto:hi@ourcompany.com" class="u-active-none u-align-center u-border-2 u-border-active-custom-color-8 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-custom-color-8 u-text-custom-color-8 u-text-hover-custom-color-8 u-btn-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> ACOMPANYEU-NOS</a>
-        <div class="u-expanded-width-sm u-expanded-width-xs u-form u-form-1">
+        <div id="rsvp" class="u-expanded-width-sm u-expanded-width-xs u-form u-form-1">
           <!-- ===== RSVP FORM (unchanged, just added an id) ===== -->
 <form id="rsvp-form"
       action="https://formspree.io/f/mkgdkbwb"
       method="POST"
       class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form"
-      style="padding: 10px;">
+      style="padding: 10px;"
+      data-formspree="true">
 
   <!-- Formspree helpers (safe) -->
   <input type="hidden" name="_subject" value="RSVP — Pàgina en Català (Casament Whitney & Marc)">
@@ -1023,6 +1041,20 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     </section>
     <!-- wm-pack.js (shared across all pages) -->
     <script src="js/wm-pack.js" defer></script>
+    <!-- ✅ Make Nicepage ignore Formspree forms (prevents reCAPTCHA error) -->
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('form[action*="formspree.io"]').forEach(function (form) {
+      form.removeAttribute('data-u-form');
+      form.removeAttribute('data-formServices');
+      form.removeAttribute('data-sitekey');
+
+      form.querySelectorAll('input[name="recaptchaResponse"], input[name="formServices"], input[name="siteKey"]').forEach(function(i){
+        i.remove();
+      });
+    });
+  });
+</script>
       <script>
     (function(){
       var p = document.getElementById('wm-preloader');
@@ -1059,6 +1091,4 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
     })();
   </script>
 </body>
-</html>
-  </body>
 </html>
