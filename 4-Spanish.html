@@ -912,7 +912,7 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
         <div class="u-expanded-width-sm u-expanded-width-xs u-form u-form-1">
           
           <!-- ===== RSVP FORM (unchanged, just added an id) ===== -->
-             <form id="rsvp-form" 
+               <form id="rsvp-form" 
              action="https://service.nicepagesrv.com/form/v4/form-process" class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="email" name="form" style="padding: 10px;">
             <div class="u-form-group u-form-name u-form-partition-factor-2">
               <label for="name-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
@@ -938,17 +938,34 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
               <textarea rows="4" cols="50" id="textarea-ac41" name="textarea" class="u-input u-input-rectangle u-text-custom-color-8" required="" placeholder="Tens alguna restricció alimentària o al·lèrgia? Exemple: vegà, vegetarià, celíac, intolerant a la lactosa, etc. En cas contrari, respon “sense restricció alimentària”"></textarea>
             </div>
             <div class="u-form-group u-form-message">
-              <label for="message-0658" class="u-label u-text-custom-color-8">Missatge</label>
-              <textarea placeholder="Missatge per als nuvis (opcional)" rows="4" cols="50" id="message-0658" name="message" class="u-input u-input-rectangle u-text-custom-color-8" required=""></textarea>
-            </div>
-            <div class="u-align-left u-form-group u-form-submit">
-              <a href="#" class="u-btn u-btn-round u-btn-submit u-button-style u-radius u-text-active-white u-text-hover-white u-btn-3">Per enviar</a>
-              <input type="submit" value="submit" class="u-form-control-hidden">
-            </div>
-            <div class="u-form-send-message u-form-send-success">Gràcies! El vostre missatge s'ha enviat.</div>
-            <div class="u-form-send-error u-form-send-message">No s'ha pogut enviar el missatge. Si us plau, corregiu els errors i torneu-ho a intentar.</div>
-            <input type="hidden" value="" name="recaptchaResponse">
-            <input type="hidden" name="formServices" value="0a59fdbc-2030-1bf2-891d-e328f5d52074">
+  <label for="message-0658" class="u-label u-text-custom-color-8">Missatge</label>
+  <textarea
+    placeholder="Missatge per als nuvis (opcional)"
+    rows="4"
+    cols="50"
+    id="message-0658"
+    name="message"
+    class="u-input u-input-rectangle u-text-custom-color-8">
+  </textarea>
+</div>
+
+<div class="u-align-left u-form-group u-form-submit">
+  <button type="submit"
+          class="u-active-custom-color-10 u-btn u-btn-round u-btn-submit u-button-style u-custom-color-10 u-hover-custom-color-11 u-radius u-text-active-white u-text-hover-white u-btn-3">
+    Enviar
+  </button>
+  <input type="submit" value="submit" class="u-form-control-hidden">
+</div>
+
+<div class="u-form-send-message u-form-send-success">
+  Gràcies! El vostre missatge s'ha enviat.
+</div>
+<div class="u-form-send-error u-form-send-message">
+  No s'ha pogut enviar el missatge. Si us plau, corregiu els errors i torneu-ho a intentar.
+</div>
+
+<input type="hidden" name="recaptchaResponse">
+<input type="hidden" name="formServices" value="0a59fdbc-2030-1bf2-891d-e328f5d52074">
           </form>
  </div>
       </div>
