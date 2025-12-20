@@ -910,63 +910,97 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
         <a href="#" class="u-active-none u-align-center u-border-2 u-border-active-palette-1-light-2 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-color-var u-text-hover-custom-color-8 u-btn-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> CONFIRMACIÓ</a>
         <a href="mailto:hi@ourcompany.com" class="u-active-none u-align-center u-border-2 u-border-active-custom-color-8 u-border-custom-color-8 u-border-hover-custom-color-8 u-border-no-left u-border-no-right u-border-no-top u-btn u-button-style u-custom-font u-font-playfair-display u-hover-none u-none u-text-active-custom-color-8 u-text-custom-color-8 u-text-hover-custom-color-8 u-btn-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0"> ACOMPANYEU-NOS</a>
         <div class="u-expanded-width-sm u-expanded-width-xs u-form u-form-1">
-          
           <!-- ===== RSVP FORM (unchanged, just added an id) ===== -->
-               <form id="rsvp-form" 
-             action="https://service.nicepagesrv.com/form/v4/form-process" class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="email" name="form" style="padding: 10px;">
-            <div class="u-form-group u-form-name u-form-partition-factor-2">
-              <label for="name-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
-              <input type="text" placeholder="Introdueix el teu nom" id="name-0658" name="name" class="u-input u-input-rectangle u-text-custom-color-8" required="">
-            </div>
-            <div class="u-form-email u-form-group u-form-partition-factor-2">
-              <label for="email-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
-              <input type="email" placeholder="Introdueix un correu electrònic vàlid" id="email-0658" name="email" class="u-input u-input-rectangle u-text-custom-color-8" required="">
-            </div>
-            <div class="u-form-group u-form-select u-form-group-3">
-              <label for="select-00b6" class="u-label u-text-custom-color-8">Desplegable</label>
-              <div class="u-form-select-wrapper">
-                <select id="select-00b6" name="select" class="u-input u-input-rectangle u-text-custom-color-8">
-                  <option value="Confirmation" data-calc="Confirmation">Confirmació</option>
-                  <option value="+1" data-calc="+1">Sí, hi seré!</option>
-                  <option value="-1" data-calc="-1">Lamentablement, no hi podré assistir</option>
-                </select>
-                <svg class="u-caret u-caret-svg u-text-custom-color-8" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16" style="fill:currentColor;" xml:space="preserve"><polygon class="st0" points="8,12 2,4 14,4 "></polygon></svg>
-              </div>
-            </div>
-            <div class="u-form-group u-form-textarea u-form-group-4">
-              <label for="textarea-ac41" class="u-label u-text-custom-color-8">Restriccions dietètiques o al·lèrgies</label>
-              <textarea rows="4" cols="50" id="textarea-ac41" name="textarea" class="u-input u-input-rectangle u-text-custom-color-8" required="" placeholder="Tens alguna restricció alimentària o al·lèrgia? Exemple: vegà, vegetarià, celíac, intolerant a la lactosa, etc. En cas contrari, respon “sense restricció alimentària”"></textarea>
-            </div>
-            <div class="u-form-group u-form-message">
-  <label for="message-0658" class="u-label u-text-custom-color-8">Missatge</label>
-  <textarea
-    placeholder="Missatge per als nuvis (opcional)"
-    rows="4"
-    cols="50"
-    id="message-0658"
-    name="message"
-    class="u-input u-input-rectangle u-text-custom-color-8">
-  </textarea>
-</div>
+<form id="rsvp-form"
+      action="https://formspree.io/f/mkgdkbwb"
+      method="POST"
+      class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form"
+      style="padding: 10px;">
 
-<div class="u-align-left u-form-group u-form-submit">
-  <button type="submit"
-          class="u-active-custom-color-10 u-btn u-btn-round u-btn-submit u-button-style u-custom-color-10 u-hover-custom-color-11 u-radius u-text-active-white u-text-hover-white u-btn-3">
-    Enviar
-  </button>
-  <input type="submit" value="submit" class="u-form-control-hidden">
-</div>
+  <!-- Formspree helpers (safe) -->
+  <input type="hidden" name="_subject" value="RSVP — Pàgina en Català (Casament Whitney & Marc)">
+  <input type="hidden" name="_replyto" value="">
+  <!-- optional: add a redirect page after submit -->
+  <!-- <input type="hidden" name="_next" value="thanks.html"> -->
 
-<div class="u-form-send-message u-form-send-success">
-  Gràcies! El vostre missatge s'ha enviat.
-</div>
-<div class="u-form-send-error u-form-send-message">
-  No s'ha pogut enviar el missatge. Si us plau, corregiu els errors i torneu-ho a intentar.
-</div>
+  <div class="u-form-group u-form-name u-form-partition-factor-2">
+    <label for="name-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
+    <input type="text"
+           placeholder="Introdueix el teu nom"
+           id="name-0658"
+           name="name"
+           class="u-input u-input-rectangle u-text-custom-color-8"
+           required>
+  </div>
 
-<input type="hidden" name="recaptchaResponse">
-<input type="hidden" name="formServices" value="0a59fdbc-2030-1bf2-891d-e328f5d52074">
-          </form>
+  <div class="u-form-email u-form-group u-form-partition-factor-2">
+    <label for="email-0658" class="u-form-control-hidden u-label u-text-custom-color-8"></label>
+    <input type="email"
+           placeholder="Introdueix un correu electrònic vàlid"
+           id="email-0658"
+           name="email"
+           class="u-input u-input-rectangle u-text-custom-color-8"
+           required>
+  </div>
+
+  <div class="u-form-group u-form-select u-form-group-3">
+    <label for="select-00b6" class="u-label u-text-custom-color-8">Confirmació</label>
+    <div class="u-form-select-wrapper">
+      <select id="select-00b6"
+              name="select"
+              class="u-input u-input-rectangle u-text-custom-color-8"
+              required>
+        <option value="Sí, hi seré!">Sí, hi seré!</option>
+        <option value="No hi podré assistir">No hi podré assistir</option>
+      </select>
+      <svg class="u-caret u-caret-svg u-text-custom-color-8" version="1.1" id="Layer_1"
+           xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+           x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16"
+           style="fill:currentColor;" xml:space="preserve">
+        <polygon class="st0" points="8,12 2,4 14,4 "></polygon>
+      </svg>
+    </div>
+  </div>
+
+  <div class="u-form-group u-form-textarea u-form-group-4">
+    <label for="textarea-f0c6" class="u-label u-text-custom-color-8">
+      Restriccions dietètiques o al·lèrgies
+    </label>
+    <textarea rows="4" cols="50"
+              id="textarea-f0c6"
+              name="dietary"
+              class="u-input u-input-rectangle u-text-custom-color-8"
+              required
+              placeholder="Tens alguna restricció alimentària o al·lèrgia? Exemple: vegà, vegetarià, celíac, intolerant a la lactosa, etc. En cas contrari, respon “sense restricció alimentària”.">
+    </textarea>
+  </div>
+
+  <div class="u-form-group u-form-message">
+    <label for="message-0658" class="u-label u-text-custom-color-8">Missatge</label>
+    <textarea placeholder="Missatge per als nuvis (opcional)"
+              rows="4"
+              cols="50"
+              id="message-0658"
+              name="message"
+              class="u-input u-input-rectangle u-text-custom-color-8"></textarea>
+  </div>
+
+  <div class="u-align-left u-form-group u-form-submit">
+    <button type="submit"
+            class="u-active-custom-color-10 u-btn u-btn-round u-btn-submit u-button-style u-custom-color-10 u-hover-custom-color-11 u-radius u-text-active-white u-text-hover-white u-btn-3">
+      Enviar
+    </button>
+    <input type="submit" value="submit" class="u-form-control-hidden">
+  </div>
+
+  <div class="u-form-send-message u-form-send-success">
+    Gràcies! El vostre missatge s'ha enviat.
+  </div>
+  <div class="u-form-send-error u-form-send-message">
+    No s'ha pogut enviar el missatge. Si us plau, corregiu els errors i torneu-ho a intentar.
+  </div>
+
+</form>
  </div>
       </div>
     </section>
