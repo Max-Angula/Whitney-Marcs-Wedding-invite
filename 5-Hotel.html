@@ -49,11 +49,19 @@
 }
 
 
-    /* Nicepage often adds bottom padding/margins on sections and sheets */
-    .u-section-1 { padding-bottom: 0 !important; margin-bottom: 0 !important; }
-    .u-section-1 .u-sheet-1 { min-height: auto !important; padding-bottom: 0 !important; }
-    .u-layout-row { margin-bottom: 0 !important; }
-    .u-container-layout { padding-bottom: 0 !important; }
+/* Nicepage often adds bottom padding/margins on sections and sheets */
+.u-section-1 { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+
+/* keep min-height cleanup, but don't force padding-bottom to 0 here */
+.u-section-1 .u-sheet-1 { min-height: auto !important; }
+
+/* only remove row bottom margin inside this section (avoid affecting other pages) */
+.u-section-1 .u-layout-row { margin-bottom: 0 !important; }
+
+/* ✅ DO NOT globally remove container padding (it breaks the hotel cards)
+   If you need to remove extra padding, target only wrapper containers, not all of them. */
+.u-section-1 > .u-sheet-1 { padding-bottom: 0 !important; }
+
 
     /* Nuke any backlink/footer remnants completely (kept) */
     .u-backlink, .u-footer, footer.u-footer {
@@ -152,6 +160,29 @@
       .wmf-locdate{ display: block; margin-top: 2px; font-size: 12px; }
       .wmf-right{ display: none; }
     }
+    
+body.u-body .u-section-1 .u-sheet-1{
+  padding-bottom: calc(var(--wm-footer-h) + 28px) !important;
+}
+/* ===== FIX: ensure last hotel never sits behind fixed footer ===== */
+body.u-body .u-section-1{
+  padding-bottom: calc(var(--wm-footer-h) + 28px) !important;
+}
+
+body.u-body .u-section-1 .u-sheet-1{
+  padding-bottom: calc(var(--wm-footer-h) + 28px) !important;
+}
+
+/* ===== FIX: mobile stacking insurance (prevents 3rd card clipping) ===== */
+@media (max-width: 767px){
+  body.u-body .u-section-1 .u-layout-row{
+    flex-wrap: wrap !important;
+  }
+  body.u-body .u-section-1 .u-layout-cell{
+    width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}
   </style>
 </head>
 
