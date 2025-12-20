@@ -9,55 +9,53 @@
   <link rel="stylesheet" href="css/wm-pack.css">
   <link rel="stylesheet" href="nicepage.css" media="screen">
   <link rel="stylesheet" href="5-Hotel.css" media="screen">
-  <script src="jquery.js" defer></script>
-  <script src="nicepage.js" defer></script>
+  <script class="u-script" type="text/javascript" src="jquery.js" defer></script>
+  <script class="u-script" type="text/javascript" src="nicepage.js" defer></script>
+  <meta name="generator" content="Nicepage 7.15.3, nicepage.com">
 
   <!-- Fonts -->
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?display=swap&family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900">
+  <link id="u-page-google-font" rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?display=swap&family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900">
+
+  <meta name="theme-color" content="#478ac9">
+  <meta property="og:title" content="5 Hotel">
+  <meta property="og:type" content="website">
 
   <style>
-    /* === Layout base === */
+    /* === Layout reset to kill bottom gap (kept) === */
     html, body { height: 100%; }
     body {
       margin: 0;
-      min-height: 100svh;
+      min-height: 100svh; /* mobile-safe viewport height */
       display: flex;
       flex-direction: column;
     }
     header, footer { flex: 0 0 auto; }
-    main { flex: 1 0 auto; }
-
-    /* === Hotel cards: SAFE padding (FIXED) === */
-    .u-section-1 .u-layout-cell > .u-container-layout {
-      padding-top: 24px !important;
-      padding-bottom: 32px !important;
-    }
-
-    /* Mobile stacking cleanup */
+    main { flex: 1 0 auto; display: block; }
+    
+    /* === Hotel cards: safe vertical padding === */
+.u-section-1 .u-container-layout {
+  padding-top: 24px !important;
+  padding-bottom: 32px !important;
+}
     @media (max-width: 767px) {
-      .u-section-1 .u-layout-cell {
-        min-height: auto !important;
-      }
-      .u-section-1 .u-btn {
-        margin-bottom: 16px !important;
-      }
-    }
+  .u-section-1 .u-layout-cell {
+    min-height: auto !important;
+  }
 
-    /* Remove extra Nicepage spacing ONLY where safe */
-    .u-section-1 {
-      padding-bottom: 0 !important;
-      margin-bottom: 0 !important;
-    }
-    .u-section-1 .u-sheet-1 {
-      min-height: auto !important;
-      padding-bottom: 0 !important;
-    }
-    .u-layout-row {
-      margin-bottom: 0 !important;
-    }
+  .u-section-1 .u-btn {
+    margin-bottom: 16px !important;
+  }
+}
 
-    /* Remove Nicepage backlink/footer */
+
+    /* Nicepage often adds bottom padding/margins on sections and sheets */
+    .u-section-1 { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+    .u-section-1 .u-sheet-1 { min-height: auto !important; padding-bottom: 0 !important; }
+    .u-layout-row { margin-bottom: 0 !important; }
+    .u-container-layout { padding-bottom: 0 !important; }
+
+    /* Nuke any backlink/footer remnants completely (kept) */
     .u-backlink, .u-footer, footer.u-footer {
       display: none !important;
       height: 0 !important;
@@ -66,128 +64,226 @@
       border: 0 !important;
     }
 
-    /* Footer space reservation */
+    /* Speaker button (glassy circle) (kept) */
+    #toggle-audio.wm-speaker{
+      position:fixed; right:16px; bottom:16px; z-index:99999;
+      width:54px; height:54px; border:none; border-radius:50%;
+      display:grid; place-items:center; padding:0;
+      background:rgba(255,255,255,.88);
+      color:#111;
+      box-shadow:0 8px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(0,0,0,.06);
+      backdrop-filter:blur(6px);
+    }
+    #toggle-audio.wm-speaker svg{ width:22px; height:22px; display:block; }
+    #toggle-audio.wm-speaker.playing::before{
+      content:""; position:absolute; inset:-10px; border-radius:999px;
+      background:radial-gradient(circle, rgba(62,47,28,.18) 0%, rgba(62,47,28,0) 60%);
+      animation:wmRing 2.6s ease-out infinite;
+    }
+    @keyframes wmRing{
+      0%{opacity:.22; transform:scale(.9)}
+      70%{opacity:.06}
+      100%{opacity:0; transform:scale(1.25)}
+    }
+
+    /* ✅ Footer padding reserve MUST be outside .wm-footer--bar */
     :root { --wm-footer-h: 72px; }
     body { padding-bottom: var(--wm-footer-h); }
 
-    /* === Wedding footer bar === */
+    /* ===== Footer – Sage bar overlay (#607457) ===== */
     .wm-footer--bar{
+      --accent: 96,116,87;       /* #607457 */
+      --text: 248,248,248;       /* near-white text */
+      --pad-y: 17px;             /* height control */
+      --pad-x: 20px;
+      --blur: 6px;
+
       position: fixed;
       left: 0; right: 0; bottom: 0;
       z-index: 9999;
-      color: #f8f8f8;
-      backdrop-filter: blur(6px) saturate(115%);
-      background: linear-gradient(180deg, #607457e0, #607457cc);
-      border-top: 1px solid rgba(255,255,255,.2);
-      padding: 17px 0;
-      font: 12.5px/1.4 system-ui, "Playfair Display", serif;
+
+      color: rgba(var(--text), .95);
+      backdrop-filter: blur(var(--blur)) saturate(115%);
+      -webkit-backdrop-filter: blur(var(--blur)) saturate(115%);
+      background:
+        linear-gradient(180deg,
+          rgba(var(--accent), .88) 0%,
+          rgba(var(--accent), .82) 60%,
+          rgba(var(--accent), .80) 100%);
+      box-shadow:
+        0 -22px 50px rgba(0,0,0,.18) inset,
+        0 -1px 0 rgba(255,255,255,.25) inset;
+      border-top: 1px solid rgba(255,255,255,.18);
+      padding: var(--pad-y) 0;
+      font: 12.5px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Playfair Display", serif;
     }
 
+    /* layout: perfect centering with symmetric columns */
     .wmf-inner{
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 18px;
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: 1fr auto 1fr; /* spacer | center | right */
       align-items: center;
+      gap: 12px;
     }
 
-    .wmf-center{ text-align: center; }
-    .wmf-brand{ font-size: 16px; }
-    .wmf-locdate{ font-size: 12px; opacity: .9; }
-    .wmf-right{ text-align: right; font-size: 12px; opacity: .8; }
+    .wmf-center{ justify-self: center; text-align: center; }
+    .wmf-brand{
+      font-family: "Playfair Display", serif;
+      font-size: 16px;
+      letter-spacing: 0.3px;
+      font-weight: 400;
+    }
+    .wmf-sep{ padding: 0 8px; opacity: .75; }
+    .wmf-locdate{
+      font-family: "Playfair Display", serif;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      font-weight: 200;
+    }
+
+    .wmf-right{ justify-self: end; opacity: .9; font-size: 12.5px; }
 
     @media (max-width: 640px){
+      .wmf-inner{ gap: 6px; }
+      .wmf-brand{ font-size: 16px; }
+      .wmf-locdate{ display: block; margin-top: 2px; font-size: 12px; }
       .wmf-right{ display: none; }
     }
   </style>
 </head>
 
-<body class="u-body u-overlap u-xl-mode">
-<header class="u-header">
-  <div class="u-sheet">
-    <a href="#" class="u-image u-logo">
-      <img src="images/ChatGPTImageOct8202503_49_57PM74.png" alt="">
-    </a>
-  </div>
-</header>
+<body data-path-to-root="./" data-include-products="false" class="u-body u-clearfix u-overlap u-xl-mode" data-lang="en">
+  <header class="u-clearfix u-header u-header" id="header">
+    <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-top-xl u-sheet-1">
+      <a href="#" class="u-align-center u-image u-logo u-image-1" data-image-width="1024" data-image-height="1536">
+        <img src="images/ChatGPTImageOct8202503_49_57PM74.png" class="u-logo-image u-logo-image-1" alt="">
+      </a>
+    </div>
+  </header>
 
-<main>
-<section class="u-section-1 u-image" id="block-7">
-  <div class="u-sheet">
-    <div class="u-layout-wrap">
-      <div class="u-layout">
-        <div class="u-layout-row">
+  <main>
+    <section class="u-clearfix u-image u-section-1" id="block-7" data-image-width="1024" data-image-height="1536">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <div class="data-layout-selected u-clearfix u-expanded-width u-layout-wrap u-layout-wrap-1">
+          <div class="u-layout">
+            <div class="u-layout-row">
 
-          <!-- Hotel 1 -->
-          <div class="u-layout-cell u-size-20 u-image">
-            <div class="u-container-layout u-valign-top">
-              <a href="https://ateneaportbarcelonamataro.com-hotel.com/es/"
-                 class="u-btn u-button-style" target="_blank">
-                <img src="images/hotel-ring.gif" alt=""> Atenea Port Barcelona Mataró
-              </a>
-            </div>
-          </div>
+              <!-- Hotel 1 -->
+              <div class="u-container-style u-image u-layout-cell u-size-20 u-image-1"
+                   data-image-width="1024" data-image-height="1536"
+                   data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+                <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-1">
+                  <a href="https://ateneaportbarcelonamataro.com-hotel.com/es/"
+                     class="u-align-center u-btn u-button-style u-btn-1"
+                     target="_blank" rel="noopener noreferrer">
+                    <span class="u-file-icon u-icon u-icon-1">
+                      <img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async">
+                    </span>
+                    Atenea Port Barcelona Mataró
+                  </a>
+                </div>
+              </div>
 
-          <!-- Hotel 2 -->
-          <div class="u-layout-cell u-size-20">
-            <div class="u-container-layout u-valign-top">
-              <img src="images/ChatGPTImageOct8202503_49_57PM70.png" class="u-image u-image-contain">
-              <a href="https://www.hotel-bb.com/es/hotel/barcelona-mataro"
-                 class="u-btn u-button-style" target="_blank">
-                <img src="images/hotel-ring.gif" alt=""> B&amp;B Hotel Barcelona Mataró
-              </a>
-            </div>
-          </div>
+              <!-- Hotel 2 -->
+              <div class="u-container-style u-layout-cell u-size-20 u-layout-cell-2"
+                   data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+                <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-container-layout-2">
+                  <img class="u-expanded-width u-image u-image-contain u-image-default u-image-2"
+                       src="images/ChatGPTImageOct8202503_49_57PM70.png"
+                       alt=""
+                       data-image-width="1024" data-image-height="1536"
+                       loading="lazy" decoding="async">
+                  <a href="https://www.hotel-bb.com/es/hotel/barcelona-mataro"
+                     class="u-align-center u-btn u-button-style u-btn-2"
+                     target="_blank" rel="noopener noreferrer">
+                    <span class="u-file-icon u-icon u-icon-2">
+                      <img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async">
+                    </span>
+                    B&amp;B HOTEL Barcelona Mataró
+                  </a>
+                </div>
+              </div>
 
-          <!-- Hotel 3 -->
-          <div class="u-layout-cell u-size-20 u-image">
-            <div class="u-container-layout u-valign-top">
-              <a href="https://xanascat.gencat.cat/ca/albergs/albergs/cabrera-de-mar-xanascat"
-                 class="u-btn u-button-style" target="_blank">
-                <img src="images/hotel-ring.gif" alt="">
-                Xanascat, la xarxa jove d'albergs de Catalunya
-              </a>
-            </div>
-          </div>
+              <!-- Hotel 3 -->
+              <div class="u-container-style u-image u-layout-cell u-size-20 u-image-3"
+                   data-image-width="1024" data-image-height="1536"
+                   data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="200">
+                <div class="u-container-layout u-valign-top-lg u-valign-top-md u-valign-top-sm u-valign-top-xl u-container-layout-3">
+                  <a href="https://xanascat.gencat.cat/ca/albergs/albergs/cabrera-de-mar-xanascat"
+                     class="u-align-center u-btn u-button-style u-btn-3"
+                     target="_blank" rel="noopener noreferrer">
+                    <span class="u-file-icon u-icon u-icon-3">
+                      <img src="images/hotel-ring.gif" alt="" loading="lazy" decoding="async">
+                    </span>
+                    Xanascat, la xarxa jove d'albergs de Catalunya
+                  </a>
+                </div>
+              </div>
 
-        </div>
+            </div><!-- /.u-layout-row -->
+          </div><!-- /.u-layout -->
+        </div><!-- /.u-layout-wrap -->
+      </div><!-- /.u-sheet -->
+    </section>
+  </main>
+
+  <!-- Wedding footer (shows, and also hides any Nicepage backlink) -->
+  <footer class="wm-footer wm-footer--bar" aria-label="Wedding footer">
+    <div class="wmf-inner">
+      <!-- left spacer keeps the center truly centered -->
+      <div class="wmf-spacer" aria-hidden="true"></div>
+
+      <!-- centered block -->
+      <div class="wmf-center">
+        <span class="wmf-brand">Whitney &amp; Marc</span>
+        <span class="wmf-sep">•</span>
+        <span class="wmf-locdate">Cabrera de Mar — 19&nbsp;Jun&nbsp;2026</span>
       </div>
+
+      <!-- right side (optional clock) mirrors the left spacer for perfect centering -->
+      <div class="wmf-right"><span id="wm-time">—</span></div>
     </div>
-  </div>
-</section>
-</main>
+  </footer>
 
-<footer class="wm-footer--bar">
-  <div class="wmf-inner">
-    <div></div>
-    <div class="wmf-center">
-      <span class="wmf-brand">Whitney &amp; Marc</span><br>
-      <span class="wmf-locdate">Cabrera de Mar — 19 Jun 2026</span>
-    </div>
-    <div class="wmf-right" id="wm-time">—</div>
-  </div>
-</footer>
+  <!-- (Hidden) Nicepage backlink/footer section still present in markup by builder -->
+  <section class="u-backlink u-clearfix u-grey-80"></section>
 
-<script>
-(function tick(){
-  const el = document.getElementById('wm-time');
-  if(!el) return;
-  el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  setTimeout(tick, 1000);
-})();
+  <script defer src="js/wm-pack.js"></script>
+  <script>
+    (function tick(){
+      const el = document.getElementById('wm-time');
+      if(!el) return;
+      const d = new Date();
+      el.textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      setTimeout(tick, 1000);
+    })();
+  </script>
+  <script>
+  (function () {
+    const root = document.documentElement;
+    const footer = document.querySelector('.wm-footer--bar');
+    if (!footer) return;
+
+    function updateFooterHeight() {
+      const h = footer.offsetHeight || 0;
+      root.style.setProperty('--wm-footer-h', h + 'px');
+    }
+
+    // Initial measurement
+    updateFooterHeight();
+
+    // Recalculate on resize / rotation
+    window.addEventListener('resize', updateFooterHeight, { passive: true });
+    window.addEventListener('orientationchange', updateFooterHeight, { passive: true });
+
+    // Fonts can affect height
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(updateFooterHeight);
+    }
+  })();
 </script>
-
-<script>
-(function(){
-  const footer = document.querySelector('.wm-footer--bar');
-  if(!footer) return;
-  const root = document.documentElement;
-  function update(){ root.style.setProperty('--wm-footer-h', footer.offsetHeight+'px'); }
-  update();
-  window.addEventListener('resize', update);
-})();
-</script>
-<script defer src="js/wm-pack.js"></script>
 </body>
 </html>
