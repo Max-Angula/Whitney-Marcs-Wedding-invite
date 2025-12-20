@@ -233,120 +233,122 @@
     }, { passive: false });
   }
 
-  // =========================================================
-  // Gift modal controller (bind once per page DOM)
-  // =========================================================
-  function initGiftModal(root = document) {
-    const modal = $('#wm-gift-modal', root);
-    if (!modal) return;
+ // =========================================================
+// Gift modal controller (bind once per page DOM) — CATALÀ
+// =========================================================
+function initGiftModal(root = document) {
+  const modal = $('#wm-gift-modal', root);
+  if (!modal) return;
 
-    const openBtn = root.querySelector('#wm-gift-link, #wm-gift-link-cat, #wm-gift-link-es, [data-wm-gift]');
-    if (!openBtn) return;
+  const openBtn = root.querySelector('#wm-gift-link, #wm-gift-link-cat, #wm-gift-link-es, [data-wm-gift]');
+  if (!openBtn) return;
 
-    if (modal.dataset.wmGiftBound === '1') return;
-    modal.dataset.wmGiftBound = '1';
+  if (modal.dataset.wmGiftBound === '1') return;
+  modal.dataset.wmGiftBound = '1';
 
-    function open() {
-      modal.classList.add('wmg-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.documentElement.style.overflow = 'hidden';
-    }
-    function close() {
-      modal.classList.remove('wmg-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.documentElement.style.overflow = '';
-    }
-
-    function buildEpc({ bic, name, iban, remittance }) {
-      const sanitize = s => String(s || '').replace(/\n|\r/g, ' ').slice(0, 70);
-      return [
-        'BCD', '001', '1', 'SCT',
-        sanitize(bic),
-        sanitize(name),
-        sanitize(iban).replace(/\s+/g, ''),
-        '', '',
-        sanitize(remittance || '')
-      ].join('\n');
-    }
-
-    function makeQR() {
-      const name = $('#wmg-name', modal)?.textContent.trim() || '';
-      const iban = $('#wmg-iban', modal)?.textContent.trim() || '';
-      const bic  = $('#wmg-swift', modal)?.textContent.trim() || '';
-      const ref  = $('#wmg-ref', modal)?.textContent.trim() || '';
-      const payload = buildEpc({ bic, name, iban, remittance: ref });
-
-      const box = $('#wmg-qr', modal);
-      if (!box || !window.QRCode) return;
-
-      box.innerHTML = '';
-      // eslint-disable-next-line no-new
-      new window.QRCode(box, { text: payload, width: 180, height: 180, correctLevel: window.QRCode.CorrectLevel.M });
-    }
-
-    async function ensureQRLib() {
-      if (window.QRCode) return;
-      await new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-        s.onload = res;
-        s.onerror = rej;
-        document.head.appendChild(s);
-      });
-    }
-
-    openBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      open();
-      try { await ensureQRLib(); makeQR(); } catch {}
-    }, { passive: false });
-
-    modal.addEventListener('click', (e) => {
-      if (e.target.matches('[data-wm-close], .wmg-backdrop')) close();
-    }, { passive: true });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') close();
-    }, { passive: true });
-
-    modal.querySelectorAll('.wmg-copy').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const sel = btn.getAttribute('data-copy');
-        const el  = sel && modal.querySelector(sel);
-        const txt = el ? el.textContent.trim() : '';
-        if (!txt) return;
-        try {
-          await navigator.clipboard.writeText(txt);
-          const old = btn.textContent;
-          btn.textContent = 'Copiat!';
-          setTimeout(() => (btn.textContent = old), 900);
-        } catch {}
-      }, { passive: true });
-    });
-
-    const dl = $('#wmg-download', modal);
-    if (dl) {
-      dl.addEventListener('click', () => {
-        const parts = [
-          'Titulars: ' + ($('#wmg-name', modal)?.textContent || ''),
-          'IBAN: ' + ($('#wmg-iban', modal)?.textContent || ''),
-          'BIC / SWIFT: ' + ($('#wmg-swift', modal)?.textContent || ''),
-          'Banc: ' + ($('#wmg-bank', modal)?.textContent || ''),
-          'Concepte: ' + ($('#wmg-ref', modal)?.textContent || '')
-        ];
-        const blob = new Blob([parts.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href = url;
-        a.download = 'detalls-regal.txt';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1500);
-      }, { passive: true });
-    }
+  function open() {
+    modal.classList.add('wmg-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+  }
+  function close() {
+    modal.classList.remove('wmg-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
   }
 
+  function buildEpc({ bic, name, iban, remittance }) {
+    const sanitize = s => String(s || '').replace(/\n|\r/g, ' ').slice(0, 70);
+    return [
+      'BCD', '001', '1', 'SCT',
+      sanitize(bic),
+      sanitize(name),
+      sanitize(iban).replace(/\s+/g, ''),
+      '', '',
+      sanitize(remittance || '')
+    ].join('\n');
+  }
+
+  function makeQR() {
+    const name = $('#wmg-name', modal)?.textContent.trim() || '';
+    const iban = $('#wmg-iban', modal)?.textContent.trim() || '';
+    const bic  = $('#wmg-swift', modal)?.textContent.trim() || '';
+    const ref  = $('#wmg-ref', modal)?.textContent.trim() || '';
+    const payload = buildEpc({ bic, name, iban, remittance: ref });
+
+    const box = $('#wmg-qr', modal);
+    if (!box || !window.QRCode) return;
+
+    box.innerHTML = '';
+    // eslint-disable-next-line no-new
+    new window.QRCode(box, { text: payload, width: 180, height: 180, correctLevel: window.QRCode.CorrectLevel.M });
+  }
+
+  async function ensureQRLib() {
+    if (window.QRCode) return;
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload = res;
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  openBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    open();
+    try { await ensureQRLib(); makeQR(); } catch {}
+  }, { passive: false });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target.matches('[data-wm-close], .wmg-backdrop')) close();
+  }, { passive: true });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  }, { passive: true });
+
+  // Copy buttons (Catalan feedback)
+  modal.querySelectorAll('.wmg-copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const sel = btn.getAttribute('data-copy');
+      const el  = sel && modal.querySelector(sel);
+      const txt = el ? el.textContent.trim() : '';
+      if (!txt) return;
+
+      try {
+        await navigator.clipboard.writeText(txt);
+        const old = btn.textContent;
+        btn.textContent = 'Copiat!';
+        setTimeout(() => (btn.textContent = old), 900);
+      } catch {}
+    }, { passive: true });
+  });
+
+  // Download details (Catalan labels + filename)
+  const dl = $('#wmg-download', modal);
+  if (dl) {
+    dl.addEventListener('click', () => {
+      const parts = [
+        'Titular del compte: ' + ($('#wmg-name', modal)?.textContent || ''),
+        'IBAN: ' + ($('#wmg-iban', modal)?.textContent || ''),
+        'BIC / SWIFT: ' + ($('#wmg-swift', modal)?.textContent || ''),
+        'Banc: ' + ($('#wmg-bank', modal)?.textContent || ''),
+        'Concepte: ' + ($('#wmg-ref', modal)?.textContent || '')
+      ];
+      const blob = new Blob([parts.join('\n') + '\n'], { type: 'text/plain;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'detalls-regal.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }, { passive: true });
+  }
+}
   // =========================================================
   // 2) TOP SCROLL PROGRESS LINE + BACK TO TOP (ONE IMPLEMENTATION)
   // =========================================================
